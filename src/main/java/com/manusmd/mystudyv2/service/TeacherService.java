@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -37,6 +38,15 @@ public class TeacherService {
             } else {
                 return new CustomResponse<>(null, "Teacher " + id + " not found", HttpStatus.NOT_FOUND);
             }
+        } catch (Exception e){
+            return new CustomResponse<>(null, "Error while searching for teacher", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public CustomResponse<List<TeacherModel>> getAllTeachers() {
+        try{
+            List<TeacherModel> allTeachers = teacherRepository.findAll();
+            return new CustomResponse<>(allTeachers, "All teachers succesfully fetched", HttpStatus.OK);
         } catch (Exception e){
             return new CustomResponse<>(null, "Error while searching for teacher", HttpStatus.INTERNAL_SERVER_ERROR);
         }
