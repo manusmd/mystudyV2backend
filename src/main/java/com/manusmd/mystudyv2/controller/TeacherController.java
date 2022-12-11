@@ -14,7 +14,7 @@ public class TeacherController {
     TeacherService teacherService;
 
     @PostMapping("/teachers")
-    public ResponseEntity<CustomResponse> createTeacher(@RequestBody TeacherModel teacher) {
+    public ResponseEntity<CustomResponse> createTeacher(@ModelAttribute TeacherModel teacher) {
         CustomResponse<TeacherModel> response = teacherService.createTeacher(teacher);
         return new ResponseEntity<>(response, response.getStatus());
     }
