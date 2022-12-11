@@ -25,7 +25,7 @@ public class TeacherService {
             return new CustomResponse<>(newTeacher, "Teacher " + newTeacher.getId() + " created successfully",
                     HttpStatus.CREATED);
         } catch (Exception e) {
-            return new CustomResponse<>(null, "Error creating teacher", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -33,22 +33,47 @@ public class TeacherService {
     public CustomResponse<TeacherModel> getTeacher(String id) {
         try {
             Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
-            if(foundTeacher.isPresent()){
-                return new CustomResponse<>(foundTeacher.get(),"Teacher found", HttpStatus.FOUND);
+            if (foundTeacher.isPresent()) {
+                return new CustomResponse<>(foundTeacher.get(), "Teacher found", HttpStatus.FOUND);
             } else {
                 return new CustomResponse<>(null, "Teacher " + id + " not found", HttpStatus.NOT_FOUND);
             }
-        } catch (Exception e){
-            return new CustomResponse<>(null, "Error while searching for teacher", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     public CustomResponse<List<TeacherModel>> getAllTeachers() {
-        try{
+        try {
             List<TeacherModel> allTeachers = teacherRepository.findAll();
             return new CustomResponse<>(allTeachers, "All teachers succesfully fetched", HttpStatus.OK);
-        } catch (Exception e){
-            return new CustomResponse<>(null, "Error while searching for teacher", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public CustomResponse<TeacherModel> updateTeacher(String id, TeacherModel teacher) {
+        try {
+            Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
+            if (foundTeacher.isPresent()) {
+                TeacherModel updatedTeacher = foundTeacher.get();
+                updatedTeacher.setFirstName(teacher.getFirstName());
+                updatedTeacher.setLastName(teacher.getLastName());
+                updatedTeacher.setEmail(teacher.getEmail());
+                updatedTeacher.setStreet(teacher.getStreet());
+                updatedTeacher.setHouse(teacher.getHouse());
+                updatedTeacher.setCity(teacher.getCity());
+                updatedTeacher.setPostcode(teacher.getPostcode());
+                updatedTeacher.setPhone(teacher.getPhone());
+                updatedTeacher.setSubjects(teacher.getSubjects());
+                updatedTeacher.setHourlyRate(teacher.getHourlyRate());
+                teacherRepository.save(updatedTeacher);
+                return new CustomResponse<>(updatedTeacher, "Teacher " + id + " successfully updated", HttpStatus.OK);
+            } else {
+                return new CustomResponse<>(null, "Teacher " + id + " not found", HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -32,6 +32,12 @@ public class TeacherController {
         CustomResponse<List<TeacherModel>> response = teacherService.getAllTeachers();
         return new ResponseEntity<>(response, response.getStatus());
     }
+
+    @PutMapping("/teachers/{id}")
+    public ResponseEntity<CustomResponse> updateTeacher(@PathVariable String id, @ModelAttribute TeacherModel teacher) {
+        CustomResponse<TeacherModel> response = teacherService.updateTeacher(id, teacher);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
 }
 
 
