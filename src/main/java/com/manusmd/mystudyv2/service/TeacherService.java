@@ -20,7 +20,7 @@ public class TeacherService {
             }
             TeacherModel newTeacher = teacherRepository.save(teacher);
             return new CustomResponse<>(newTeacher, "Teacher " + newTeacher.getId() + " created successfully",
-                    HttpStatus.OK);
+                    HttpStatus.CREATED);
         } catch (Exception e) {
             return new CustomResponse<>(null, "Error creating teacher", HttpStatus.INTERNAL_SERVER_ERROR);
         }
