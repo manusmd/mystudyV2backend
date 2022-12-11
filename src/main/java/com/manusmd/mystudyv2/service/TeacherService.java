@@ -19,7 +19,7 @@ public class TeacherService {
                 return new CustomResponse<>(foundTeacher, "Teacher already exists", HttpStatus.CONFLICT);
             }
             TeacherModel newTeacher = teacherRepository.save(teacher);
-            return new CustomResponse<>(newTeacher, "Teacher " + newTeacher.getId() + "created successfully",
+            return new CustomResponse<>(newTeacher, "Teacher " + newTeacher.getId() + " created successfully",
                     HttpStatus.OK);
         } catch (Exception e) {
             return new CustomResponse<>(null, "Error creating teacher", HttpStatus.INTERNAL_SERVER_ERROR);
