@@ -28,7 +28,7 @@ public class TeacherController {
     }
 
     @GetMapping("/teachers")
-    public ResponseEntity<CustomResponse<List<TeacherModel>>> getAllTeachers(){
+    public ResponseEntity<CustomResponse<List<TeacherModel>>> getAllTeachers() {
         CustomResponse<List<TeacherModel>> response = teacherService.getAllTeachers();
         return new ResponseEntity<>(response, response.getStatus());
     }
@@ -44,6 +44,13 @@ public class TeacherController {
         CustomResponse<TeacherModel> response = teacherService.toggleStatus(id);
         return new ResponseEntity<>(response, response.getStatus());
     }
+
+    @DeleteMapping("/teachers/{id}")
+    public ResponseEntity<CustomResponse<TeacherModel>> deleteTeacher(@PathVariable String id){
+        CustomResponse<TeacherModel> response = teacherService.deleteTeacher(id);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
+
 }
 
 
