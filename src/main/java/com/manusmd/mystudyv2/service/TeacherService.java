@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -17,13 +18,12 @@ public class TeacherService {
 
     public CustomResponse<TeacherModel> createTeacher(TeacherModel teacher) {
         try {
-            TeacherModel foundTeacher = teacherRepository.findByEmail(teacher.getEmail());
-            if (foundTeacher != null) {
-                return new CustomResponse<>(foundTeacher, "Teacher already exists", HttpStatus.CONFLICT);
+            Optional<TeacherModel> foundTeacher = teacherRepository.findByEmail(teacher.getEmail());
+            if (foundTeacher.isPresent()) {
+                return new CustomResponse<>(foundTeacher.get(), "Teacher already exists", HttpStatus.CONFLICT);
             }
             TeacherModel newTeacher = teacherRepository.save(teacher);
-            return new CustomResponse<>(newTeacher, "Teacher " + newTeacher.getId() + " created successfully",
-                    HttpStatus.CREATED);
+            return new CustomResponse<>(newTeacher, "Teacher " + newTeacher.getId() + " created successfully", HttpStatus.CREATED);
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -46,7 +46,7 @@ public class TeacherService {
     public CustomResponse<List<TeacherModel>> getAllTeachers() {
         try {
             List<TeacherModel> allTeachers = teacherRepository.findAll();
-            return new CustomResponse<>(allTeachers, "All teachers succesfully fetched", HttpStatus.OK);
+            return new CustomResponse<>(allTeachers, "All teachers successfully fetched", HttpStatus.OK);
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -55,7 +55,15 @@ public class TeacherService {
     public CustomResponse<TeacherModel> updateTeacher(String id, TeacherModel teacher) {
         try {
             Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
+            Optional<TeacherModel> foundTeacherByEmail = teacherRepository.findByEmail(teacher.getEmail());
             if (foundTeacher.isPresent()) {
+                if (!teacher.getEmail()
+                        .equals(foundTeacher.get()
+                                .getEmail()) && foundTeacherByEmail.isPresent() && !Objects.equals(foundTeacherByEmail.get()
+                        .getId(), id)) {
+                    return new CustomResponse<>(teacher, "There is already a user with the mail address " + teacher.getEmail(), HttpStatus.CONFLICT);
+
+                }
                 TeacherModel updatedTeacher = foundTeacher.get();
                 updatedTeacher.setFirstName(teacher.getFirstName());
                 updatedTeacher.setLastName(teacher.getLastName());
