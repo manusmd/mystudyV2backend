@@ -84,4 +84,21 @@ public class TeacherService {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public CustomResponse<TeacherModel> toggleStatus(String id) {
+        try {
+            Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
+            if(foundTeacher.isPresent()){
+                TeacherModel updatedTeacher = foundTeacher.get();
+                updatedTeacher.setActive(!updatedTeacher.isActive());
+                teacherRepository.save(updatedTeacher);
+                return new CustomResponse<>(updatedTeacher,
+                        "Teacher " + id + "active state is set to: " + updatedTeacher.isActive(), HttpStatus.OK);
+            } else {
+                return new CustomResponse<>(null, "Teacher " + id + " not found", HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e){
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

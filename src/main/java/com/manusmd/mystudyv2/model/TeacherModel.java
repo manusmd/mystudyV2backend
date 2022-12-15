@@ -20,6 +20,7 @@ public class TeacherModel {
     private String postcode;
     private String phone;
     private List<String> subjects;
+    private boolean active = true;
     private double hourlyRate;
 
     public TeacherModel(String firstName, String lastName, String email, String street, String house, String city, String postcode, String phone, List<String> subjects, double hourlyRate) {

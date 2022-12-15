@@ -16,26 +16,32 @@ public class TeacherController {
     TeacherService teacherService;
 
     @PostMapping("/teachers")
-    public ResponseEntity<CustomResponse> createTeacher(@ModelAttribute TeacherModel teacher) {
+    public ResponseEntity<CustomResponse<TeacherModel>> createTeacher(@ModelAttribute TeacherModel teacher) {
         CustomResponse<TeacherModel> response = teacherService.createTeacher(teacher);
         return new ResponseEntity<>(response, response.getStatus());
     }
 
     @GetMapping("/teachers/{id}")
-    public ResponseEntity<CustomResponse> getTeacher(@PathVariable String id) {
+    public ResponseEntity<CustomResponse<TeacherModel>> getTeacher(@PathVariable String id) {
         CustomResponse<TeacherModel> response = teacherService.getTeacher(id);
         return new ResponseEntity<>(response, response.getStatus());
     }
 
     @GetMapping("/teachers")
-    public ResponseEntity<CustomResponse> getAllTeachers(){
+    public ResponseEntity<CustomResponse<List<TeacherModel>>> getAllTeachers(){
         CustomResponse<List<TeacherModel>> response = teacherService.getAllTeachers();
         return new ResponseEntity<>(response, response.getStatus());
     }
 
     @PutMapping("/teachers/{id}")
-    public ResponseEntity<CustomResponse> updateTeacher(@PathVariable String id, @ModelAttribute TeacherModel teacher) {
+    public ResponseEntity<CustomResponse<TeacherModel>> updateTeacher(@PathVariable String id, @ModelAttribute TeacherModel teacher) {
         CustomResponse<TeacherModel> response = teacherService.updateTeacher(id, teacher);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
+
+    @PutMapping("/teachers/{id}/active")
+    public ResponseEntity<CustomResponse<TeacherModel>> toggleTeacherStatus(@PathVariable String id) {
+        CustomResponse<TeacherModel> response = teacherService.toggleStatus(id);
         return new ResponseEntity<>(response, response.getStatus());
     }
 }
