@@ -45,7 +45,8 @@ public class EmployeeService {
     public CustomResponse<List<EmployeeModel>> getAllEmployees() {
         try {
             List<EmployeeModel> foundEmployees = employeeRepository.findAll();
-            return new CustomResponse<>(foundEmployees, "Succesfully fetched " + foundEmployees.size() + " employee/s", HttpStatus.FOUND);
+            return new CustomResponse<>(foundEmployees, "Successfully fetched " + foundEmployees.size() + " employee" +
+                    "/s", HttpStatus.FOUND);
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
