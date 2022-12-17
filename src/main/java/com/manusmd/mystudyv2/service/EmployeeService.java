@@ -51,4 +51,26 @@ public class EmployeeService {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public CustomResponse<EmployeeModel> updateEmployee(EmployeeModel employee, String id) {
+        try {
+            Optional<EmployeeModel> foundEmployee = employeeRepository.findById(id);
+
+            if (foundEmployee.isEmpty()) {
+                return new CustomResponse<>(null, "No employee with id " + id + " found", HttpStatus.NOT_FOUND);
+            }
+            if (!foundEmployee.get().checkEmailChangeLegit(employee, employeeRepository)) {
+                return new CustomResponse<>(employee,
+                        "There is already an employee with the mail address " + employee.getEmail(),
+                        HttpStatus.CONFLICT);
+
+            }
+            employee.setId(id);
+            EmployeeModel updatedEmployee = employeeRepository.save(employee);
+            return new CustomResponse<>(updatedEmployee, "Successfully updated employee " + id, HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

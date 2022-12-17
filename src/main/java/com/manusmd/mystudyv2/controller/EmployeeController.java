@@ -31,4 +31,11 @@ public class EmployeeController {
         CustomResponse<List<EmployeeModel>> response = employeeService.getAllEmployees();
         return new ResponseEntity<>(response,response.getStatus());
     }
+
+    @PutMapping("/employees/{id}")
+    public ResponseEntity<CustomResponse<EmployeeModel>> updateEmployee(@ModelAttribute EmployeeModel employee,
+                                                                        @PathVariable String id){
+        CustomResponse<EmployeeModel> response = employeeService.updateEmployee(employee, id);
+        return new ResponseEntity<>(response,response.getStatus());
+    }
 }

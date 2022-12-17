@@ -1,8 +1,11 @@
 package com.manusmd.mystudyv2.model;
 
+import com.manusmd.mystudyv2.repository.EmployeeRepository;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Optional;
 
 @Data
 @Document("employees")
@@ -31,5 +34,11 @@ public class EmployeeModel {
         this.postcode = postcode;
         this.phone = phone;
         this.hourlyRate = hourlyRate;
+    }
+
+    public boolean checkEmailChangeLegit(EmployeeModel employee, EmployeeRepository employeeRepository){
+        Optional<EmployeeModel> foundEmployeeByEmail = employeeRepository.findByEmail(employee.getEmail());
+        return foundEmployeeByEmail.isEmpty();
+
     }
 }
