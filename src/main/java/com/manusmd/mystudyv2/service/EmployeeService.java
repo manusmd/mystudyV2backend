@@ -89,4 +89,17 @@ public class EmployeeService {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public CustomResponse<EmployeeModel> deleteEmployee(String id) {
+        try {
+            Optional<EmployeeModel> foundEmployee = employeeRepository.findById(id);
+            if (foundEmployee.isEmpty()) {
+                return new CustomResponse<>(null, "No employee with id " + id + " found", HttpStatus.NOT_FOUND);
+            }
+            employeeRepository.deleteById(id);
+            return new CustomResponse<>(null, "Employee " + id + " deleted successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

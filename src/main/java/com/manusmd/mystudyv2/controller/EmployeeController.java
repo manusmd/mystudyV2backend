@@ -44,4 +44,10 @@ public class EmployeeController {
         CustomResponse<EmployeeModel> response = employeeService.toggleStatus(id);
         return new ResponseEntity<>(response,response.getStatus());
     }
+
+    @DeleteMapping("/employees/{id}")
+    public ResponseEntity<CustomResponse<EmployeeModel>> deleteEmployee(@PathVariable String id){
+        CustomResponse<EmployeeModel> response = employeeService.deleteEmployee(id);
+        return new ResponseEntity<>(response,response.getStatus());
+    }
 }
