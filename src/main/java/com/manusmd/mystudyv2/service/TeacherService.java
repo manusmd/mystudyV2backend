@@ -1,6 +1,6 @@
 package com.manusmd.mystudyv2.service;
 
-import com.manusmd.mystudyv2.model.CustomResponse;
+import com.manusmd.mystudyv2.response.CustomResponse;
 import com.manusmd.mystudyv2.model.TeacherModel;
 import com.manusmd.mystudyv2.repository.TeacherRepository;
 import lombok.AllArgsConstructor;
