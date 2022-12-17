@@ -71,4 +71,22 @@ public class EmployeeService {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public CustomResponse<EmployeeModel> toggleStatus(String id) {
+        try {
+            Optional<EmployeeModel> foundEmployee = employeeRepository.findById(id);
+            if (foundEmployee.isEmpty()) {
+                return new CustomResponse<>(null, "No employee with id " + id + " found", HttpStatus.NOT_FOUND);
+            }
+            EmployeeModel employee = foundEmployee.get();
+            employee.setActive(!employee.isActive());
+            EmployeeModel updatedEmployee = employeeRepository.save(employee);
+            return new CustomResponse<>(updatedEmployee,
+                    "Employee " + id + "active state is set to: " + updatedEmployee.isActive(),
+                    HttpStatus.OK);
+
+        } catch (Exception e) {
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

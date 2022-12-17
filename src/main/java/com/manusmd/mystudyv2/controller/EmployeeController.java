@@ -38,4 +38,10 @@ public class EmployeeController {
         CustomResponse<EmployeeModel> response = employeeService.updateEmployee(employee, id);
         return new ResponseEntity<>(response,response.getStatus());
     }
+
+    @PutMapping("/employees/{id}/active")
+    public ResponseEntity<CustomResponse<EmployeeModel>> toggleEmployeeStatus(@PathVariable String id){
+        CustomResponse<EmployeeModel> response = employeeService.toggleStatus(id);
+        return new ResponseEntity<>(response,response.getStatus());
+    }
 }
