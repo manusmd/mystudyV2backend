@@ -1,4 +1,4 @@
-package com.manusmd.mystudyv2.model;
+package com.manusmd.mystudyv2.response;
 
 import lombok.Data;
 import org.springframework.http.HttpStatus;
