@@ -20,11 +20,11 @@ public class EmployeeService {
             Optional<EmployeeModel> foundEmployee = employeeRepository.findByEmail(employee.getEmail());
             if (foundEmployee.isPresent()) {
                 return new CustomResponse<>(foundEmployee.get(),
-                        "There already is an employee with this address: " + employee.getEmail(), HttpStatus.CONFLICT);
+                        "An employee with this mail address already exists", HttpStatus.CONFLICT);
             }
             EmployeeModel createdEmployee = employeeRepository.save(employee);
-            return new CustomResponse<>(createdEmployee, "Employee with id " + createdEmployee.getId() + " created",
-                    HttpStatus.CREATED);
+            return new CustomResponse<>(createdEmployee, "Employee " + createdEmployee.getId() + " created " +
+                    "successfully", HttpStatus.CREATED);
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -60,9 +60,7 @@ public class EmployeeService {
                 return new CustomResponse<>(null, "No employee with id " + id + " found", HttpStatus.NOT_FOUND);
             }
             if (!foundEmployee.get().checkEmailChangeLegit(employee, employeeRepository)) {
-                return new CustomResponse<>(employee,
-                        "There is already an employee with the mail address " + employee.getEmail(),
-                        HttpStatus.CONFLICT);
+                return new CustomResponse<>(null, "Email already in use", HttpStatus.CONFLICT);
 
             }
             employee.setId(id);
