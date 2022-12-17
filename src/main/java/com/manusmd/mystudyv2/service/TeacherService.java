@@ -64,19 +64,10 @@ public class TeacherService {
                     return new CustomResponse<>(teacher, "There is already a user with the mail address " + teacher.getEmail(), HttpStatus.CONFLICT);
 
                 }
-                TeacherModel updatedTeacher = foundTeacher.get();
-                updatedTeacher.setFirstName(teacher.getFirstName());
-                updatedTeacher.setLastName(teacher.getLastName());
-                updatedTeacher.setEmail(teacher.getEmail());
-                updatedTeacher.setStreet(teacher.getStreet());
-                updatedTeacher.setHouse(teacher.getHouse());
-                updatedTeacher.setCity(teacher.getCity());
-                updatedTeacher.setPostcode(teacher.getPostcode());
-                updatedTeacher.setPhone(teacher.getPhone());
-                updatedTeacher.setSubjects(teacher.getSubjects());
-                updatedTeacher.setHourlyRate(teacher.getHourlyRate());
-                teacherRepository.save(updatedTeacher);
-                return new CustomResponse<>(updatedTeacher, "Teacher " + id + " successfully updated", HttpStatus.OK);
+
+                teacher.setId(id);
+                teacherRepository.save(teacher);
+                return new CustomResponse<>(teacher, "Teacher " + id + " successfully updated", HttpStatus.OK);
             } else {
                 return new CustomResponse<>(null, "Teacher " + id + " not found", HttpStatus.NOT_FOUND);
             }
