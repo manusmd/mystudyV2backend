@@ -89,9 +89,9 @@ public class TeacherService {
         try {
             Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
             if(foundTeacher.isPresent()){
-                TeacherModel updatedTeacher = foundTeacher.get();
-                updatedTeacher.setActive(!updatedTeacher.isActive());
-                teacherRepository.save(updatedTeacher);
+                TeacherModel teacher = foundTeacher.get();
+                teacher.setActive(!teacher.isActive());
+                TeacherModel updatedTeacher = teacherRepository.save(teacher);
                 return new CustomResponse<>(updatedTeacher,
                         "Teacher " + id + "active state is set to: " + updatedTeacher.isActive(), HttpStatus.OK);
             } else {
