@@ -5,8 +5,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-public interface TeacherRepository extends MongoRepository<TeacherModel, String> {
+public interface TeacherRepository extends MongoRepository<TeacherModel,String> {
     Optional<TeacherModel> findByEmail(String email);
+
 
 }
 

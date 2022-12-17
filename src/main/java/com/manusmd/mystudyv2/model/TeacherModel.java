@@ -1,37 +1,21 @@
 package com.manusmd.mystudyv2.model;
 
 import lombok.Data;
-import org.springframework.data.annotation.Id;
+import lombok.EqualsAndHashCode;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
+
 @Document(collection = "teachers")
-public class TeacherModel {
-    @Id
-    private String id;
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String street;
-    private String house;
-    private String city;
-    private String postcode;
-    private String phone;
+public class TeacherModel extends UserModel {
     private List<String> subjects;
-    private boolean active = true;
     private double hourlyRate;
 
     public TeacherModel(String firstName, String lastName, String email, String street, String house, String city, String postcode, String phone, List<String> subjects, double hourlyRate) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.street = street;
-        this.house = house;
-        this.city = city;
-        this.postcode = postcode;
-        this.phone = phone;
+        super(firstName, lastName, email, street, house, city, postcode, phone);
         this.subjects = subjects;
         this.hourlyRate = hourlyRate;
     }
