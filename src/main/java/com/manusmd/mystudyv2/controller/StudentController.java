@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @AllArgsConstructor
 public class StudentController {
@@ -22,5 +24,11 @@ public class StudentController {
     public ResponseEntity<CustomResponse<StudentModel>> getStudent(@PathVariable String id) {
         CustomResponse<StudentModel> response = studentService.getStudent(id);
         return new ResponseEntity<>(response, response.getStatus());
+    }
+
+    @GetMapping("/Students")
+    public ResponseEntity<CustomResponse<List<StudentModel>>> getAllStudents(){
+        CustomResponse<List<StudentModel>> response = studentService.getAllStudents();
+        return new ResponseEntity<>(response,response.getStatus());
     }
 }
