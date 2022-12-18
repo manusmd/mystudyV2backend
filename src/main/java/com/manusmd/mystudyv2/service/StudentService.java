@@ -25,4 +25,16 @@ public class StudentService {
             return new CustomResponse<>(null, "Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public CustomResponse<StudentModel> getStudent(String id) {
+        try {
+             Optional<StudentModel> foundStudent = studentRepository.findById(id);
+             if(foundStudent.isEmpty()){
+                 return new CustomResponse<>(null,"Student " + id + " not found", HttpStatus.NOT_FOUND);
+             }
+             return new CustomResponse<>(foundStudent.get(), "Student found", HttpStatus.OK);
+        } catch (Exception e){
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
