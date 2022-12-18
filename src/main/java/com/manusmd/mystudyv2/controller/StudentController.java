@@ -38,4 +38,11 @@ public class StudentController {
         CustomResponse<StudentModel> response = studentService.updateStudent(student, id);
         return new ResponseEntity<>(response,response.getStatus());
     }
+
+    @PutMapping("/Students/{id}/active")
+    public ResponseEntity<CustomResponse<StudentModel>> toggleStudentStatus(@PathVariable String id){
+        CustomResponse<StudentModel> response = studentService.toggleStatus(id);
+        return new ResponseEntity<>(response,response.getStatus());
+
+    }
 }

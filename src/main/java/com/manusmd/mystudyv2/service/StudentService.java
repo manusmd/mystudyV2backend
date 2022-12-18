@@ -66,4 +66,20 @@ public class StudentService {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public CustomResponse<StudentModel> toggleStatus(String id) {
+        try {
+            Optional<StudentModel> foundStudent = studentRepository.findById(id);
+            if(foundStudent.isEmpty()){
+                return new CustomResponse<>(null, "No student with id " + id + " found", HttpStatus.NOT_FOUND);
+            }
+            StudentModel student = foundStudent.get();
+            student.setActive(!student.isActive());
+            StudentModel updatedStudent = studentRepository.save(student);
+            return new CustomResponse<>(updatedStudent,
+                    "Student " + id + " active state is set to: " + updatedStudent.isActive(), HttpStatus.OK);
+        } catch (Exception e){
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
