@@ -43,6 +43,12 @@ public class StudentController {
     public ResponseEntity<CustomResponse<StudentModel>> toggleStudentStatus(@PathVariable String id){
         CustomResponse<StudentModel> response = studentService.toggleStatus(id);
         return new ResponseEntity<>(response,response.getStatus());
+    }
+
+    @DeleteMapping("/Students/{id}")
+    public ResponseEntity<CustomResponse<StudentModel>> deleteStudent(@PathVariable String id){
+        CustomResponse<StudentModel> response = studentService.deleteStudent(id);
+        return new ResponseEntity<>(response,response.getStatus());
 
     }
 }

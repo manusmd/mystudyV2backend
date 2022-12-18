@@ -14,6 +14,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class StudentService {
     StudentRepository studentRepository;
+
     public CustomResponse<StudentModel> createStudent(StudentModel student) {
         try {
             Optional<StudentModel> foundStudent = studentRepository.findByEmail(student.getEmail());
@@ -29,12 +30,12 @@ public class StudentService {
 
     public CustomResponse<StudentModel> getStudent(String id) {
         try {
-             Optional<StudentModel> foundStudent = studentRepository.findById(id);
-             if(foundStudent.isEmpty()){
-                 return new CustomResponse<>(null,"Student " + id + " not found", HttpStatus.NOT_FOUND);
-             }
-             return new CustomResponse<>(foundStudent.get(), "Student found", HttpStatus.OK);
-        } catch (Exception e){
+            Optional<StudentModel> foundStudent = studentRepository.findById(id);
+            if (foundStudent.isEmpty()) {
+                return new CustomResponse<>(null, "Student " + id + " not found", HttpStatus.NOT_FOUND);
+            }
+            return new CustomResponse<>(foundStudent.get(), "Student found", HttpStatus.OK);
+        } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -44,7 +45,7 @@ public class StudentService {
             List<StudentModel> foundStudents = studentRepository.findAll();
             return new CustomResponse<>(foundStudents, "Successfully fetched " + foundStudents.size() + " student/s",
                     HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 
         }
@@ -53,16 +54,16 @@ public class StudentService {
     public CustomResponse<StudentModel> updateStudent(StudentModel student, String id) {
         try {
             Optional<StudentModel> foundStudent = studentRepository.findById(id);
-            if(foundStudent.isEmpty()){
+            if (foundStudent.isEmpty()) {
                 return new CustomResponse<>(null, "No student with id " + id + " found", HttpStatus.NOT_FOUND);
             }
-            if(!foundStudent.get().checkEmailChangeLegit(student, studentRepository)){
+            if (!foundStudent.get().checkEmailChangeLegit(student, studentRepository)) {
                 return new CustomResponse<>(null, "Email already in use", HttpStatus.CONFLICT);
             }
             student.setId(id);
             StudentModel updatedStudent = studentRepository.save(student);
             return new CustomResponse<>(updatedStudent, "Successfully updated student " + id, HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -70,7 +71,7 @@ public class StudentService {
     public CustomResponse<StudentModel> toggleStatus(String id) {
         try {
             Optional<StudentModel> foundStudent = studentRepository.findById(id);
-            if(foundStudent.isEmpty()){
+            if (foundStudent.isEmpty()) {
                 return new CustomResponse<>(null, "No student with id " + id + " found", HttpStatus.NOT_FOUND);
             }
             StudentModel student = foundStudent.get();
@@ -78,6 +79,19 @@ public class StudentService {
             StudentModel updatedStudent = studentRepository.save(student);
             return new CustomResponse<>(updatedStudent,
                     "Student " + id + " active state is set to: " + updatedStudent.isActive(), HttpStatus.OK);
+        } catch (Exception e) {
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public CustomResponse<StudentModel> deleteStudent(String id) {
+        try {
+            Optional<StudentModel> foundStudent = studentRepository.findById(id);
+            if (foundStudent.isEmpty()) {
+                return new CustomResponse<>(null, "No student with id " + id + " found", HttpStatus.NOT_FOUND);
+            }
+            studentRepository.deleteById(id);
+            return new CustomResponse<>(null, "Student " + id + " deleted successfully", HttpStatus.OK);
         } catch (Exception e){
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
