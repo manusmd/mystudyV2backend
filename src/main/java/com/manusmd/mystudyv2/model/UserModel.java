@@ -1,6 +1,7 @@
 package com.manusmd.mystudyv2.model;
 
 import com.manusmd.mystudyv2.repository.EmployeeRepository;
+import com.manusmd.mystudyv2.repository.StudentRepository;
 import com.manusmd.mystudyv2.repository.TeacherRepository;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -42,6 +43,10 @@ public class UserModel {
     public boolean checkEmailChangeLegit (UserModel employee, EmployeeRepository repository) {
         Optional<EmployeeModel> foundEmployeeByEmail = repository.findByEmail(employee.getEmail());
         return foundEmployeeByEmail.isEmpty();
+    }
+    public boolean checkEmailChangeLegit (UserModel employee, StudentRepository repository) {
+        Optional<StudentModel> foundStudentByEmail = repository.findByEmail(employee.getEmail());
+        return foundStudentByEmail.isEmpty();
     }
 
 

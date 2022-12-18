@@ -49,4 +49,21 @@ public class StudentService {
 
         }
     }
+
+    public CustomResponse<StudentModel> updateStudent(StudentModel student, String id) {
+        try {
+            Optional<StudentModel> foundStudent = studentRepository.findById(id);
+            if(foundStudent.isEmpty()){
+                return new CustomResponse<>(null, "No student with id " + id + " found", HttpStatus.NOT_FOUND);
+            }
+            if(!foundStudent.get().checkEmailChangeLegit(student, studentRepository)){
+                return new CustomResponse<>(null, "Email already in use", HttpStatus.CONFLICT);
+            }
+            student.setId(id);
+            StudentModel updatedStudent = studentRepository.save(student);
+            return new CustomResponse<>(updatedStudent, "Successfully updated student " + id, HttpStatus.OK);
+        } catch (Exception e){
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
