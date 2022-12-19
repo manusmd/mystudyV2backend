@@ -28,6 +28,13 @@ public class CustomResponse {
         return new CustomResponse(data, String.format("Successfully created %s", lowerCaseResource), HttpStatus.OK);
     }
 
+    public static CustomResponse ALREADY_EXISTS(Object data, String resource, String checkedProperty) {
+        String lowerCaseResource = resource.toLowerCase();
+        return new CustomResponse(data, String.format("An %s with this %s already exists", lowerCaseResource,
+                checkedProperty.toLowerCase()),
+                HttpStatus.CONFLICT);
+    }
+
     public static CustomResponse FOUND(Object data, String resource) {
         String upperCaseResource = StringUtils.capitalize(resource);
         return new CustomResponse(data, String.format("%s found", upperCaseResource), HttpStatus.OK);
