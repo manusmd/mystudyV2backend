@@ -7,48 +7,39 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @AllArgsConstructor
 public class StudentController {
     StudentService studentService;
-
     @PostMapping("/Students")
-    public ResponseEntity<CustomResponse<StudentModel>> createStudent(@ModelAttribute StudentModel student) {
-        CustomResponse<StudentModel> response = studentService.createStudent(student);
+    public ResponseEntity<CustomResponse> createStudent(@ModelAttribute StudentModel student) {
+        CustomResponse response = studentService.createStudent(student);
         return new ResponseEntity<>(response, response.getStatus());
     }
-
     @GetMapping("/Students/{id}")
-    public ResponseEntity<CustomResponse<StudentModel>> getStudent(@PathVariable String id) {
-        CustomResponse<StudentModel> response = studentService.getStudent(id);
+    public ResponseEntity<CustomResponse> getStudent(@PathVariable String id) {
+        CustomResponse response = studentService.getStudent(id);
         return new ResponseEntity<>(response, response.getStatus());
     }
-
     @GetMapping("/Students")
-    public ResponseEntity<CustomResponse<List<StudentModel>>> getAllStudents(){
-        CustomResponse<List<StudentModel>> response = studentService.getAllStudents();
+    public ResponseEntity<CustomResponse> getAllStudents(){
+        CustomResponse response = studentService.getAllStudents();
         return new ResponseEntity<>(response,response.getStatus());
     }
-
     @PutMapping("/Students/{id}")
-    public ResponseEntity<CustomResponse<StudentModel>> updateStudent(@ModelAttribute StudentModel student,
+    public ResponseEntity<CustomResponse> updateStudent(@ModelAttribute StudentModel student,
                                                                       @PathVariable String id){
-        CustomResponse<StudentModel> response = studentService.updateStudent(student, id);
+        CustomResponse response = studentService.updateStudent(student, id);
         return new ResponseEntity<>(response,response.getStatus());
     }
-
     @PutMapping("/Students/{id}/active")
-    public ResponseEntity<CustomResponse<StudentModel>> toggleStudentStatus(@PathVariable String id){
-        CustomResponse<StudentModel> response = studentService.toggleStatus(id);
+    public ResponseEntity<CustomResponse> toggleStudentStatus(@PathVariable String id){
+        CustomResponse response = studentService.toggleStatus(id);
         return new ResponseEntity<>(response,response.getStatus());
     }
-
     @DeleteMapping("/Students/{id}")
-    public ResponseEntity<CustomResponse<StudentModel>> deleteStudent(@PathVariable String id){
-        CustomResponse<StudentModel> response = studentService.deleteStudent(id);
+    public ResponseEntity<CustomResponse> deleteStudent(@PathVariable String id){
+        CustomResponse response = studentService.deleteStudent(id);
         return new ResponseEntity<>(response,response.getStatus());
-
     }
 }

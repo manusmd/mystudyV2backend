@@ -4,7 +4,6 @@ import com.manusmd.mystudyv2.model.TeacherModel;
 import com.manusmd.mystudyv2.repository.TeacherRepository;
 import com.manusmd.mystudyv2.response.CustomResponse;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,85 +14,82 @@ import java.util.Optional;
 public class TeacherService {
     TeacherRepository teacherRepository;
 
-    public CustomResponse<TeacherModel> createTeacher(TeacherModel teacher) {
+    public CustomResponse createTeacher(TeacherModel teacher) {
         try {
             Optional<TeacherModel> foundTeacher = teacherRepository.findByEmail(teacher.getEmail());
             if (foundTeacher.isPresent()) {
-                return new CustomResponse<>(foundTeacher.get(), "A teacher with this mail address already exists",
-                        HttpStatus.CONFLICT);
+                return CustomResponse.ALREADY_EXISTS(teacher, "Teacher", "mail");
             }
             TeacherModel newTeacher = teacherRepository.save(teacher);
-            return new CustomResponse<>(newTeacher, "Teacher " + newTeacher.getId() + " created successfully", HttpStatus.CREATED);
+            return CustomResponse.CREATED(newTeacher, "Teacher");
         } catch (Exception e) {
-            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
 
-    public CustomResponse<TeacherModel> getTeacher(String id) {
+    public CustomResponse getTeacher(String id) {
         try {
             Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
             if (foundTeacher.isEmpty()) {
-                return new CustomResponse<>(null, "Teacher " + id + " not found", HttpStatus.NOT_FOUND);
+                return CustomResponse.NOT_FOUND("Teacher", id);
             }
-            return new CustomResponse<>(foundTeacher.get(), "Teacher found", HttpStatus.OK);
+            return CustomResponse.FOUND(foundTeacher.get(), "Teacher");
         } catch (Exception e) {
-            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
 
-    public CustomResponse<List<TeacherModel>> getAllTeachers() {
+    public CustomResponse getAllTeachers() {
         try {
             List<TeacherModel> foundTeachers = teacherRepository.findAll();
-            return new CustomResponse<>(foundTeachers, "Successfully fetched " + foundTeachers.size() + " teacher/s",
-                    HttpStatus.OK);
+            return CustomResponse.FOUND_FETCHED_LIST(foundTeachers, "Teacher");
         } catch (Exception e) {
-            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
 
-    public CustomResponse<TeacherModel> updateTeacher(String id, TeacherModel teacher) {
+    public CustomResponse updateTeacher(String id, TeacherModel teacher) {
         try {
             Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
             if (foundTeacher.isEmpty()) {
-                return new CustomResponse<>(null, "No teacher with id " + id + " found", HttpStatus.NOT_FOUND);
+                return CustomResponse.NOT_FOUND("Teacher", id);
             }
             if (!foundTeacher.get().checkEmailChangeLegit(teacher, teacherRepository)) {
-                return new CustomResponse<>(teacher, "Email already in use", HttpStatus.CONFLICT);
+                return CustomResponse.ALREADY_EXISTS(teacher, "Teacher", "mail");
             }
             teacher.setId(id);
             TeacherModel updatedTeacher = teacherRepository.save(teacher);
-            return new CustomResponse<>(updatedTeacher, "Successfully updated teacher " + id, HttpStatus.OK);
+            return CustomResponse.OK_PUT(updatedTeacher, "Teacher");
         } catch (Exception e) {
-            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
 
-    public CustomResponse<TeacherModel> toggleStatus(String id) {
+    public CustomResponse toggleStatus(String id) {
         try {
             Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
             if (foundTeacher.isEmpty()) {
-                return new CustomResponse<>(null, "Teacher " + id + " not found", HttpStatus.NOT_FOUND);
+                return CustomResponse.NOT_FOUND("Teacher", id);
             }
             TeacherModel teacher = foundTeacher.get();
             teacher.setActive(!teacher.isActive());
             TeacherModel updatedTeacher = teacherRepository.save(teacher);
-            return new CustomResponse<>(updatedTeacher,
-                    "Teacher " + id + " active state is set to: " + updatedTeacher.isActive(), HttpStatus.OK);
+            return CustomResponse.OK_PUT(updatedTeacher, "Teacher");
         } catch (Exception e) {
-            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
 
-    public CustomResponse<TeacherModel> deleteTeacher(String id) {
+    public CustomResponse deleteTeacher(String id) {
         try {
             Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
             if (foundTeacher.isEmpty()) {
-                return new CustomResponse<>(null, "No teacher with id " + id + " found", HttpStatus.NOT_FOUND);
+                return CustomResponse.NOT_FOUND("Teacher", id);
             }
             teacherRepository.deleteById(id);
-            return new CustomResponse<>(foundTeacher.get(), "Teacher " + id + " deleted successfully", HttpStatus.OK);
+            return CustomResponse.OK_DELETE("Teacher", id);
         } catch (Exception e) {
-            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
 }
