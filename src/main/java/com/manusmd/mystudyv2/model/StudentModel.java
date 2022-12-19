@@ -13,4 +13,9 @@ public class StudentModel extends UserModel {
     public StudentModel(String firstName, String lastName, String email, String street, String house, String city, String postcode, String phone) {
         super(firstName, lastName, email, street, house, city, postcode, phone);
     }
+
+    public void bookBalance(Double value) {
+        setBalance(this.balance + value);
+    }
+
 }
