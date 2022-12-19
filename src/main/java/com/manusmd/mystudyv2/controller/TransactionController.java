@@ -40,4 +40,10 @@ public class TransactionController {
         CustomResponse<TransactionModel> response = transactionService.updateTransaction(transaction,id);
         return new ResponseEntity<>(response, response.getStatus());
     }
+
+    @DeleteMapping("/Transactions/{id}")
+    public ResponseEntity<CustomResponse<TransactionModel>> deleteTransaction(@PathVariable String id){
+        CustomResponse<TransactionModel> response = transactionService.deleteTransaction(id);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
 }

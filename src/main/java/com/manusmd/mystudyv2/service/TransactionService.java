@@ -26,7 +26,8 @@ public class TransactionService {
                 return new CustomResponse<>(null, "Student " + transaction.getStudentId() + " not found",
                         HttpStatus.NOT_FOUND);
             }
-            StudentModel updatedStudent = foundStudent.get().bookBalanceAndSave(transaction.getValue(),studentRepository);
+            StudentModel updatedStudent = foundStudent.get()
+                    .bookBalanceAndSave(transaction.getValue(), studentRepository);
             TransactionModel createdTransaction = transactionRepository.save(transaction);
             TransactionResponse response = new TransactionResponse();
             response.copyTransaction(createdTransaction);
@@ -91,14 +92,39 @@ public class TransactionService {
 
             StudentModel updatedStudent =
                     foundStudent.get().bookBalanceAndSave(transaction.getValue() - foundTransaction.get().getValue(),
-                    studentRepository);
-            TransactionModel updatedTransaction = foundTransaction.get().updateAndSave(id, transaction, transactionRepository);
+                            studentRepository);
+            TransactionModel updatedTransaction = foundTransaction.get()
+                    .updateAndSave(id, transaction, transactionRepository);
 
             TransactionResponse response = new TransactionResponse();
             response.copyTransaction(updatedTransaction);
             response.setNewBalance(updatedStudent.getBalance());
             return new CustomResponse<>(response, "Successfully updated transaction " + id, HttpStatus.OK);
 
+        } catch (Exception e) {
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public CustomResponse<TransactionModel> deleteTransaction(String id) {
+        try {
+            Optional<TransactionModel> foundTransaction = transactionRepository.findById(id);
+            if (foundTransaction.isEmpty()) {
+                return new CustomResponse<>(null, "Transaction " + id + " not found", HttpStatus.NOT_FOUND);
+            }
+            Optional<StudentModel> foundStudent = studentRepository.findById(foundTransaction.get().getStudentId());
+
+            if (foundStudent.isEmpty()) {
+                return new CustomResponse<>(null, "Student " + foundTransaction.get().getStudentId() + " not found",
+                        HttpStatus.NOT_FOUND);
+            }
+
+            StudentModel updatedStudent = foundStudent.get().bookBalanceAndSave(-foundTransaction.get().getValue(),
+                    studentRepository);
+            transactionRepository.deleteById(id);
+            return new CustomResponse<>(null,
+                    "Transaction " + id + " deleted successfully! New balance: " + updatedStudent.getBalance(),
+                    HttpStatus.OK);
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
