@@ -2,6 +2,7 @@ package com.manusmd.mystudyv2.response;
 
 import lombok.Data;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class CustomResponse {
     }
 
     public static CustomResponse NOT_FOUND(String resource, String id) {
-        String upperCaseResource = resource.toUpperCase();
+        String upperCaseResource = StringUtils.capitalize(resource);
         return new CustomResponse(null, String.format("%s %s not found", upperCaseResource, id), HttpStatus.NOT_FOUND);
     }
 
@@ -28,7 +29,7 @@ public class CustomResponse {
     }
 
     public static CustomResponse FOUND(Object data, String resource) {
-        String upperCaseResource = resource.toUpperCase();
+        String upperCaseResource = StringUtils.capitalize(resource);
         return new CustomResponse(data, String.format("%s found", upperCaseResource), HttpStatus.OK);
     }
 
@@ -48,12 +49,12 @@ public class CustomResponse {
                 HttpStatus.OK);
     }
     public static CustomResponse OK_DELETE(String resource, String id) {
-        String upperCaseResource = resource.toUpperCase();
+        String upperCaseResource = StringUtils.capitalize(resource);
         return new CustomResponse(null, String.format("%s %s deleted successfully!", upperCaseResource, id),
                 HttpStatus.OK);
     }
     public static CustomResponse OK_DELETE(String resource, String id, String additionalMessage) {
-        String upperCaseResource = resource.toUpperCase();
+        String upperCaseResource = StringUtils.capitalize(resource);
         return new CustomResponse(null, String.format("%s %s deleted successfully! %s", upperCaseResource, id,
                 additionalMessage),
                 HttpStatus.OK);
