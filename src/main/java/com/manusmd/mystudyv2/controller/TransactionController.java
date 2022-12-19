@@ -34,4 +34,10 @@ public class TransactionController {
         CustomResponse<List<TransactionModel>> response = transactionService.getTransactionsByStudentId(studentId);
         return new ResponseEntity<>(response,response.getStatus());
     }
+
+    @PutMapping("/Transactions/{id}")
+    public ResponseEntity<CustomResponse<TransactionModel>> updateTransaction(@ModelAttribute TransactionModel transaction, @PathVariable String id){
+        CustomResponse<TransactionModel> response = transactionService.updateTransaction(transaction,id);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
 }

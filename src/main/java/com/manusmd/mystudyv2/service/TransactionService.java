@@ -26,8 +26,7 @@ public class TransactionService {
                 return new CustomResponse<>(null, "Student " + transaction.getStudentId() + " not found",
                         HttpStatus.NOT_FOUND);
             }
-            foundStudent.get().bookBalance(transaction.getValue());
-            StudentModel updatedStudent = studentRepository.save(foundStudent.get());
+            StudentModel updatedStudent = foundStudent.get().bookBalanceAndSave(transaction.getValue(),studentRepository);
             TransactionModel createdTransaction = transactionRepository.save(transaction);
             TransactionResponse response = new TransactionResponse();
             response.copyTransaction(createdTransaction);
@@ -55,7 +54,7 @@ public class TransactionService {
             List<TransactionModel> foundTransactions = transactionRepository.findAll();
             return new CustomResponse<>(foundTransactions, "Successfully fetched " + foundTransactions.size() + " " +
                     "transaction/s", HttpStatus.OK);
-        } catch (Exception e){
+        } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -63,13 +62,44 @@ public class TransactionService {
     public CustomResponse<List<TransactionModel>> getTransactionsByStudentId(String studentId) {
         try {
             Optional<StudentModel> foundStudent = studentRepository.findById(studentId);
-            if(foundStudent.isEmpty()){
+            if (foundStudent.isEmpty()) {
                 return new CustomResponse<>(null, "Student " + studentId + " not found", HttpStatus.NOT_FOUND);
             }
             List<TransactionModel> foundTransactions = transactionRepository.findByStudentId(studentId);
             return new CustomResponse<>(foundTransactions, "Successfully fetched " + foundTransactions.size() + " " +
-                    "transaction/s for student " + studentId,HttpStatus.OK);
-        } catch (Exception e){
+                    "transaction/s for student " + studentId, HttpStatus.OK);
+        } catch (Exception e) {
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    public CustomResponse<TransactionModel> updateTransaction(TransactionModel transaction, String id) {
+        try {
+            Optional<TransactionModel> foundTransaction = transactionRepository.findById(id);
+            if (foundTransaction.isEmpty()) {
+                return new CustomResponse<>(null, "Transaction " + id + " not found", HttpStatus.NOT_FOUND);
+            }
+            if (!transaction.getStudentId().equals(foundTransaction.get().getStudentId())) {
+                return new CustomResponse<>(null, "Can't change studentId! Create a POST request to book balance on " +
+                        "student " + transaction.getStudentId(), HttpStatus.NOT_FOUND);
+            }
+            Optional<StudentModel> foundStudent = studentRepository.findById(transaction.getStudentId());
+            if (foundStudent.isEmpty()) {
+                return new CustomResponse<>(null, "Transaction " + id + " not found", HttpStatus.NOT_FOUND);
+            }
+
+            StudentModel updatedStudent =
+                    foundStudent.get().bookBalanceAndSave(transaction.getValue() - foundTransaction.get().getValue(),
+                    studentRepository);
+            TransactionModel updatedTransaction = foundTransaction.get().updateAndSave(id, transaction, transactionRepository);
+
+            TransactionResponse response = new TransactionResponse();
+            response.copyTransaction(updatedTransaction);
+            response.setNewBalance(updatedStudent.getBalance());
+            return new CustomResponse<>(response, "Successfully updated transaction " + id, HttpStatus.OK);
+
+        } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
