@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -46,7 +47,16 @@ public class TransactionService {
             return new CustomResponse<>(foundTransaction.get(), "Transaction found", HttpStatus.OK);
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
+    public CustomResponse<List<TransactionModel>> getAllTransactions() {
+        try {
+            List<TransactionModel> foundTransactions = transactionRepository.findAll();
+            return new CustomResponse<>(foundTransactions, "Successfully fetched " + foundTransactions.size() + " " +
+                    "transaction/s", HttpStatus.OK);
+        } catch (Exception e){
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @AllArgsConstructor
 public class TransactionController {
@@ -21,6 +23,12 @@ public class TransactionController {
     @GetMapping("/Transactions/{id}")
     public ResponseEntity<CustomResponse<TransactionModel>> getTransaction(@PathVariable String id){
         CustomResponse<TransactionModel> response = transactionService.getTransaction(id);
+        return new ResponseEntity<>(response,response.getStatus());
+    }
+
+    @GetMapping("/Transactions")
+    public ResponseEntity<CustomResponse<List<TransactionModel>>> getAllTransactions(){
+        CustomResponse<List<TransactionModel>> response = transactionService.getAllTransactions();
         return new ResponseEntity<>(response,response.getStatus());
     }
 }
