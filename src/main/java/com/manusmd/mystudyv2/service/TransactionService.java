@@ -59,4 +59,18 @@ public class TransactionService {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public CustomResponse<List<TransactionModel>> getTransactionsByStudentId(String studentId) {
+        try {
+            Optional<StudentModel> foundStudent = studentRepository.findById(studentId);
+            if(foundStudent.isEmpty()){
+                return new CustomResponse<>(null, "Student " + studentId + " not found", HttpStatus.NOT_FOUND);
+            }
+            List<TransactionModel> foundTransactions = transactionRepository.findByStudentId(studentId);
+            return new CustomResponse<>(foundTransactions, "Successfully fetched " + foundTransactions.size() + " " +
+                    "transaction/s for student " + studentId,HttpStatus.OK);
+        } catch (Exception e){
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
