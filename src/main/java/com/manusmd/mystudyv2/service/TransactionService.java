@@ -36,4 +36,17 @@ public class TransactionService {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public CustomResponse<TransactionModel> getTransaction(String id) {
+        try {
+            Optional<TransactionModel> foundTransaction = transactionRepository.findById(id);
+            if (foundTransaction.isEmpty()) {
+                return new CustomResponse<>(null, "Transaction " + id + " not found", HttpStatus.NOT_FOUND);
+            }
+            return new CustomResponse<>(foundTransaction.get(), "Transaction found", HttpStatus.OK);
+        } catch (Exception e) {
+            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+    }
 }
