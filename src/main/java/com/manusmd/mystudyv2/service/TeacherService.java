@@ -19,24 +19,23 @@ public class TeacherService {
         try {
             Optional<TeacherModel> foundTeacher = teacherRepository.findByEmail(teacher.getEmail());
             if (foundTeacher.isPresent()) {
-                return new CustomResponse<>(foundTeacher.get(), "Teacher already exists", HttpStatus.CONFLICT);
+                return new CustomResponse<>(foundTeacher.get(), "A teacher with this mail address already exists",
+                        HttpStatus.CONFLICT);
             }
             TeacherModel newTeacher = teacherRepository.save(teacher);
             return new CustomResponse<>(newTeacher, "Teacher " + newTeacher.getId() + " created successfully", HttpStatus.CREATED);
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     public CustomResponse<TeacherModel> getTeacher(String id) {
         try {
             Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
-            if (foundTeacher.isPresent()) {
-                return new CustomResponse<>(foundTeacher.get(), "Teacher found", HttpStatus.FOUND);
-            } else {
+            if (foundTeacher.isEmpty()) {
                 return new CustomResponse<>(null, "Teacher " + id + " not found", HttpStatus.NOT_FOUND);
             }
+            return new CustomResponse<>(foundTeacher.get(), "Teacher found", HttpStatus.OK);
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -44,8 +43,9 @@ public class TeacherService {
 
     public CustomResponse<List<TeacherModel>> getAllTeachers() {
         try {
-            List<TeacherModel> allTeachers = teacherRepository.findAll();
-            return new CustomResponse<>(allTeachers, "All teachers successfully fetched", HttpStatus.OK);
+            List<TeacherModel> foundTeachers = teacherRepository.findAll();
+            return new CustomResponse<>(foundTeachers, "Successfully fetched " + foundTeachers.size() + " teacher/s",
+                    HttpStatus.OK);
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -58,14 +58,11 @@ public class TeacherService {
                 return new CustomResponse<>(null, "No teacher with id " + id + " found", HttpStatus.NOT_FOUND);
             }
             if (!foundTeacher.get().checkEmailChangeLegit(teacher, teacherRepository)) {
-                return new CustomResponse<>(teacher, "There is already a user with the mail address " + teacher.getEmail(), HttpStatus.CONFLICT);
+                return new CustomResponse<>(teacher, "Email already in use", HttpStatus.CONFLICT);
             }
-
             teacher.setId(id);
-            teacherRepository.save(teacher);
-            return new CustomResponse<>(teacher, "Successfully updated teacher " + id,
-                    HttpStatus.OK);
-
+            TeacherModel updatedTeacher = teacherRepository.save(teacher);
+            return new CustomResponse<>(updatedTeacher, "Successfully updated teacher " + id, HttpStatus.OK);
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -74,15 +71,14 @@ public class TeacherService {
     public CustomResponse<TeacherModel> toggleStatus(String id) {
         try {
             Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
-            if (foundTeacher.isPresent()) {
-                TeacherModel teacher = foundTeacher.get();
-                teacher.setActive(!teacher.isActive());
-                TeacherModel updatedTeacher = teacherRepository.save(teacher);
-                return new CustomResponse<>(updatedTeacher,
-                        "Teacher " + id + "active state is set to: " + updatedTeacher.isActive(), HttpStatus.OK);
-            } else {
+            if (foundTeacher.isEmpty()) {
                 return new CustomResponse<>(null, "Teacher " + id + " not found", HttpStatus.NOT_FOUND);
             }
+            TeacherModel teacher = foundTeacher.get();
+            teacher.setActive(!teacher.isActive());
+            TeacherModel updatedTeacher = teacherRepository.save(teacher);
+            return new CustomResponse<>(updatedTeacher,
+                    "Teacher " + id + " active state is set to: " + updatedTeacher.isActive(), HttpStatus.OK);
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -91,13 +87,11 @@ public class TeacherService {
     public CustomResponse<TeacherModel> deleteTeacher(String id) {
         try {
             Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
-            if (foundTeacher.isPresent()) {
-                teacherRepository.deleteById(id);
-                return new CustomResponse<>(foundTeacher.get(), "Teacher " + id + " successfully deleted",
-                        HttpStatus.OK);
-            } else {
-                return new CustomResponse<>(null, "Teacher " + id + " not found", HttpStatus.NOT_FOUND);
+            if (foundTeacher.isEmpty()) {
+                return new CustomResponse<>(null, "No teacher with id " + id + " found", HttpStatus.NOT_FOUND);
             }
+            teacherRepository.deleteById(id);
+            return new CustomResponse<>(foundTeacher.get(), "Teacher " + id + " deleted successfully", HttpStatus.OK);
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

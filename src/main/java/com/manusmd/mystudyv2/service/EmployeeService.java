@@ -36,7 +36,7 @@ public class EmployeeService {
             if (foundEmployee.isEmpty()) {
                 return new CustomResponse<>(null, "Employee " + id + " not found", HttpStatus.NOT_FOUND);
             }
-            return new CustomResponse<>(foundEmployee.get(), "Employee found", HttpStatus.FOUND);
+            return new CustomResponse<>(foundEmployee.get(), "Employee found", HttpStatus.OK);
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -45,8 +45,7 @@ public class EmployeeService {
     public CustomResponse<List<EmployeeModel>> getAllEmployees() {
         try {
             List<EmployeeModel> foundEmployees = employeeRepository.findAll();
-            return new CustomResponse<>(foundEmployees, "Successfully fetched " + foundEmployees.size() + " employee" +
-                    "/s", HttpStatus.FOUND);
+            return new CustomResponse<>(foundEmployees, "Successfully fetched " + foundEmployees.size() + " employee/s", HttpStatus.OK);
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -55,7 +54,6 @@ public class EmployeeService {
     public CustomResponse<EmployeeModel> updateEmployee(EmployeeModel employee, String id) {
         try {
             Optional<EmployeeModel> foundEmployee = employeeRepository.findById(id);
-
             if (foundEmployee.isEmpty()) {
                 return new CustomResponse<>(null, "No employee with id " + id + " found", HttpStatus.NOT_FOUND);
             }
@@ -66,7 +64,6 @@ public class EmployeeService {
             employee.setId(id);
             EmployeeModel updatedEmployee = employeeRepository.save(employee);
             return new CustomResponse<>(updatedEmployee, "Successfully updated employee " + id, HttpStatus.OK);
-
         } catch (Exception e) {
             return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -82,7 +79,7 @@ public class EmployeeService {
             employee.setActive(!employee.isActive());
             EmployeeModel updatedEmployee = employeeRepository.save(employee);
             return new CustomResponse<>(updatedEmployee,
-                    "Employee " + id + "active state is set to: " + updatedEmployee.isActive(),
+                    "Employee " + id + " active state is set to: " + updatedEmployee.isActive(),
                     HttpStatus.OK);
 
         } catch (Exception e) {
