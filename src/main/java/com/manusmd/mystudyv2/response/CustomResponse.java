@@ -30,7 +30,7 @@ public class CustomResponse {
 
     public static CustomResponse ALREADY_EXISTS(Object data, String resource, String checkedProperty) {
         String lowerCaseResource = resource.toLowerCase();
-        return new CustomResponse(data, String.format("An %s with this %s already exists", lowerCaseResource,
+        return new CustomResponse(data, String.format("A/an %s with this %s already exists", lowerCaseResource,
                 checkedProperty.toLowerCase()),
                 HttpStatus.CONFLICT);
     }
