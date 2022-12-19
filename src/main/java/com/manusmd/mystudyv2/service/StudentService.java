@@ -19,7 +19,8 @@ public class StudentService {
         try {
             Optional<StudentModel> foundStudent = studentRepository.findByEmail(student.getEmail());
             if (foundStudent.isPresent()) {
-                return new CustomResponse<>(null, "Student already exists", HttpStatus.CONFLICT);
+                return new CustomResponse<>(null, "A student with this mail address already exists",
+                        HttpStatus.CONFLICT);
             }
             StudentModel createdStudent = studentRepository.save(student);
             return new CustomResponse<>(createdStudent, "Student " + createdStudent.getId() + " created", HttpStatus.CREATED);
