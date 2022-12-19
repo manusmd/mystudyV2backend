@@ -36,16 +36,16 @@ public class UserModel {
         this.phone = phone;
     }
 
-    public boolean checkEmailChangeLegit (UserModel employee, TeacherRepository repository) {
-        Optional<TeacherModel> foundEmployeeByEmail = repository.findByEmail(employee.getEmail());
-        return foundEmployeeByEmail.isEmpty();
+    public boolean checkEmailChangeLegit (TeacherModel teacher, TeacherRepository repository) {
+        Optional<TeacherModel> foundTeacherByEmail = repository.findByEmail(teacher.getEmail());
+        return foundTeacherByEmail.isEmpty();
     }
-    public boolean checkEmailChangeLegit (UserModel employee, EmployeeRepository repository) {
+    public boolean checkEmailChangeLegit (EmployeeModel employee, EmployeeRepository repository) {
         Optional<EmployeeModel> foundEmployeeByEmail = repository.findByEmail(employee.getEmail());
         return foundEmployeeByEmail.isEmpty();
     }
-    public boolean checkEmailChangeLegit (UserModel employee, StudentRepository repository) {
-        Optional<StudentModel> foundStudentByEmail = repository.findByEmail(employee.getEmail());
+    public boolean checkEmailChangeLegit (StudentModel student, StudentRepository repository) {
+        Optional<StudentModel> foundStudentByEmail = repository.findByEmail(student.getEmail());
         return foundStudentByEmail.isEmpty();
     }
 
