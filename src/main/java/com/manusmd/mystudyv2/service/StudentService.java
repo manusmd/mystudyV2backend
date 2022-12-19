@@ -4,7 +4,6 @@ import com.manusmd.mystudyv2.model.StudentModel;
 import com.manusmd.mystudyv2.repository.StudentRepository;
 import com.manusmd.mystudyv2.response.CustomResponse;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,87 +13,77 @@ import java.util.Optional;
 @AllArgsConstructor
 public class StudentService {
     StudentRepository studentRepository;
-
-    public CustomResponse<StudentModel> createStudent(StudentModel student) {
+    public CustomResponse createStudent(StudentModel student) {
         try {
             Optional<StudentModel> foundStudent = studentRepository.findByEmail(student.getEmail());
             if (foundStudent.isPresent()) {
-                return new CustomResponse<>(null, "A student with this mail address already exists",
-                        HttpStatus.CONFLICT);
+                return CustomResponse.ALREADY_EXISTS(student,"Student", "mail");
             }
             StudentModel createdStudent = studentRepository.save(student);
-            return new CustomResponse<>(createdStudent, "Student " + createdStudent.getId() + " created", HttpStatus.CREATED);
+            return CustomResponse.CREATED(createdStudent, "Student");
         } catch (Exception e) {
-            return new CustomResponse<>(null, "Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
-
-    public CustomResponse<StudentModel> getStudent(String id) {
+    public CustomResponse getStudent(String id) {
         try {
             Optional<StudentModel> foundStudent = studentRepository.findById(id);
             if (foundStudent.isEmpty()) {
-                return new CustomResponse<>(null, "Student " + id + " not found", HttpStatus.NOT_FOUND);
+                return CustomResponse.NOT_FOUND("Student", id);
             }
-            return new CustomResponse<>(foundStudent.get(), "Student found", HttpStatus.OK);
+            return CustomResponse.FOUND(foundStudent.get(), "Student");
         } catch (Exception e) {
-            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
-
-    public CustomResponse<List<StudentModel>> getAllStudents() {
+    public CustomResponse getAllStudents() {
         try {
             List<StudentModel> foundStudents = studentRepository.findAll();
-            return new CustomResponse<>(foundStudents, "Successfully fetched " + foundStudents.size() + " student/s",
-                    HttpStatus.OK);
+            return CustomResponse.FOUND_FETCHED_LIST(foundStudents,"Student");
         } catch (Exception e) {
-            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
-
-    public CustomResponse<StudentModel> updateStudent(StudentModel student, String id) {
+    public CustomResponse updateStudent(StudentModel student, String id) {
         try {
             Optional<StudentModel> foundStudent = studentRepository.findById(id);
             if (foundStudent.isEmpty()) {
-                return new CustomResponse<>(null, "No student with id " + id + " found", HttpStatus.NOT_FOUND);
+                return CustomResponse.NOT_FOUND("Student", id);
             }
             if (!foundStudent.get().checkEmailChangeLegit(student, studentRepository)) {
-                return new CustomResponse<>(null, "Email already in use", HttpStatus.CONFLICT);
+                return CustomResponse.ALREADY_EXISTS(student, "Student", "mail");
             }
             student.setId(id);
             StudentModel updatedStudent = studentRepository.save(student);
-            return new CustomResponse<>(updatedStudent, "Successfully updated student " + id, HttpStatus.OK);
+            return CustomResponse.OK_PUT(updatedStudent, "Student");
         } catch (Exception e) {
-            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
-
-    public CustomResponse<StudentModel> toggleStatus(String id) {
+    public CustomResponse toggleStatus(String id) {
         try {
             Optional<StudentModel> foundStudent = studentRepository.findById(id);
             if (foundStudent.isEmpty()) {
-                return new CustomResponse<>(null, "No student with id " + id + " found", HttpStatus.NOT_FOUND);
+                return CustomResponse.NOT_FOUND("Student", id);
             }
             StudentModel student = foundStudent.get();
             student.setActive(!student.isActive());
             StudentModel updatedStudent = studentRepository.save(student);
-            return new CustomResponse<>(updatedStudent,
-                    "Student " + id + " active state is set to: " + updatedStudent.isActive(), HttpStatus.OK);
+            return CustomResponse.OK_PUT(updatedStudent, "Student");
         } catch (Exception e) {
-            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
-
-    public CustomResponse<StudentModel> deleteStudent(String id) {
+    public CustomResponse deleteStudent(String id) {
         try {
             Optional<StudentModel> foundStudent = studentRepository.findById(id);
             if (foundStudent.isEmpty()) {
-                return new CustomResponse<>(null, "No student with id " + id + " found", HttpStatus.NOT_FOUND);
+                return CustomResponse.NOT_FOUND("Student", id);
             }
             studentRepository.deleteById(id);
-            return new CustomResponse<>(null, "Student " + id + " deleted successfully", HttpStatus.OK);
-        } catch (Exception e){
-            return new CustomResponse<>(null, e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return CustomResponse.OK_DELETE("Student", id);
+        } catch (Exception e) {
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
 }
