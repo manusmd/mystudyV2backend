@@ -22,7 +22,9 @@ public class CustomResponse {
         String upperCaseResource = StringUtils.capitalize(resource);
         return new CustomResponse(null, String.format("%s %s not found", upperCaseResource, id), HttpStatus.NOT_FOUND);
     }
-
+    public static CustomResponse NOT_FOUND(String customMessage) {
+        return new CustomResponse(null, customMessage, HttpStatus.NOT_FOUND);
+    }
     public static CustomResponse CREATED(Object data, String resource) {
         String lowerCaseResource = resource.toLowerCase();
         return new CustomResponse(data, String.format("Successfully created %s", lowerCaseResource), HttpStatus.OK);
@@ -68,8 +70,11 @@ public class CustomResponse {
     }
 
     public static CustomResponse INTERNAL_SERVER_ERROR(String error) {
-        return new CustomResponse(null, error, HttpStatus.OK);
+        return new CustomResponse(null, error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 
+    public static CustomResponse CONFLICT( String message) {
+        return new CustomResponse(null, message, HttpStatus.CONFLICT);
+    }
 }
