@@ -6,6 +6,7 @@ import com.manusmd.mystudyv2.response.CustomResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -32,6 +33,14 @@ public class RoomService {
                 return CustomResponse.NOT_FOUND("Room", id);
             }
             return CustomResponse.FOUND(foundRoom.get(),"Room");
+        } catch (Exception e){
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        }
+    }
+    public CustomResponse getAllRooms() {
+        try {
+            List<RoomModel> foundRooms = roomRepository.findAll();
+            return CustomResponse.FOUND_FETCHED_LIST(foundRooms, "Room");
         } catch (Exception e){
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }

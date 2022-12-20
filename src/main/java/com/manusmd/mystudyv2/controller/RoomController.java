@@ -11,16 +11,19 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class RoomController {
     RoomService roomService;
-
     @PostMapping("/Rooms")
     public ResponseEntity<CustomResponse> createRoom(@ModelAttribute RoomModel room){
         CustomResponse response = roomService.createRoom(room);
         return new ResponseEntity<>(response,response.getStatus());
     }
-
     @GetMapping("/Rooms/{id}")
     public ResponseEntity<CustomResponse> getRoom(@PathVariable String id){
         CustomResponse response = roomService.getRoom(id);
+        return new ResponseEntity<>(response,response.getStatus());
+    }
+    @GetMapping("/Rooms")
+    public ResponseEntity<CustomResponse> getAllRooms(){
+        CustomResponse response = roomService.getAllRooms();
         return new ResponseEntity<>(response,response.getStatus());
     }
 }
