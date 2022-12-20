@@ -40,4 +40,15 @@ public class EventService {
         }
 
     }
+
+    public CustomResponse getEvent(String id) {
+        try {
+            EventModel foundEvent = eventRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Event", id));
+            return CustomResponse.FOUND(foundEvent, "Event");
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getMessage());
+        } catch (Exception e) {
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        }
+    }
 }
