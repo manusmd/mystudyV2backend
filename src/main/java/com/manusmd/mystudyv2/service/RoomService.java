@@ -24,4 +24,16 @@ public class RoomService {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
+
+    public CustomResponse getRoom(String id) {
+        try {
+            Optional<RoomModel> foundRoom = roomRepository.findById(id);
+            if(foundRoom.isEmpty()){
+                return CustomResponse.NOT_FOUND("Room", id);
+            }
+            return CustomResponse.FOUND(foundRoom.get(),"Room");
+        } catch (Exception e){
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        }
+    }
 }
