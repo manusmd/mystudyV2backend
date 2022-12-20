@@ -23,4 +23,10 @@ public class EventController {
         CustomResponse response = eventService.getEvent(id);
         return new ResponseEntity<>(response,response.getStatus());
     }
+
+    @GetMapping("/Events")
+    public ResponseEntity<CustomResponse> getEvents(){
+        CustomResponse response = eventService.getEvents();
+        return new ResponseEntity<>(response,response.getStatus());
+    }
 }

@@ -51,4 +51,12 @@ public class EventService {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
+
+    public CustomResponse getEvents() {
+        try {
+            return CustomResponse.FOUND_FETCHED_LIST(eventRepository.findAll(), "Events");
+        } catch (Exception e) {
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        }
+    }
 }
