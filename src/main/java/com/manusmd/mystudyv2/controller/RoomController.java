@@ -26,4 +26,9 @@ public class RoomController {
         CustomResponse response = roomService.getAllRooms();
         return new ResponseEntity<>(response,response.getStatus());
     }
+    @PutMapping("/Rooms/{id}")
+    public ResponseEntity<CustomResponse> updateRoom(@ModelAttribute RoomModel room,@PathVariable String id){
+        CustomResponse response = roomService.updateRoom(id, room);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
 }

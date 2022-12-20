@@ -45,4 +45,23 @@ public class RoomService {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
+
+    public CustomResponse updateRoom(String id, RoomModel room) {
+        try {
+            Optional<RoomModel> foundRoom = roomRepository.findById(id);
+            if(foundRoom.isEmpty()){
+                return CustomResponse.NOT_FOUND("Room", id);
+            }
+            if(foundRoom.get().checkNameChangeLegit(room, roomRepository)){
+                return CustomResponse.ALREADY_EXISTS(room, "Room", "name");
+            }
+            if(room.getName() != null) foundRoom.get().setName(room.getName());
+            if(room.getCapacity() != null) foundRoom.get().setCapacity(room.getCapacity());
+            if(room.getNotes() != null) foundRoom.get().setNotes(room.getNotes());
+            RoomModel updatedRoom = roomRepository.save(foundRoom.get());
+            return CustomResponse.OK_PUT(updatedRoom, "Room");
+        } catch (Exception e){
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        }
+    }
 }
