@@ -27,7 +27,7 @@ public class EventService {
             StudentModel.studentsExist(event.getStudents(), studentRepository);
             TeacherModel.teacherExists(event.getTeacher(), teacherRepository);
             EventModel.checkTeacherHasTime(event, event.getTeacher(), eventRepository);
-            EventModel.checkStudentsHasTime(event, eventRepository);
+            EventModel.checkStudentsHaveTime(event, eventRepository);
             RoomModel.isRoomAvailable(event, roomRepository, eventRepository);
             EventModel newEvent = eventRepository.save(event);
             return CustomResponse.CREATED(newEvent, "Event");

@@ -52,7 +52,7 @@ public class EventModel {
         }
     }
 
-    public static void checkStudentsHasTime(EventModel event, EventRepository eventRepository) throws ResourceConflict {
+    public static void checkStudentsHaveTime(EventModel event, EventRepository eventRepository) throws ResourceConflict {
         List<EventModel> foundStudentEvent = new ArrayList<>();
         event.getStudents().forEach(student_id -> foundStudentEvent.addAll(eventRepository.findByStudentsContains(student_id)));
         List<String> blockedStudents = new ArrayList<>();
