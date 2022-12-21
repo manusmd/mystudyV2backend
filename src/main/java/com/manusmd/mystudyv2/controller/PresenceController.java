@@ -29,4 +29,16 @@ public class PresenceController {
         CustomResponse response = presenceService.getPresencesByStudent(studentId);
         return new ResponseEntity<>(response, response.getStatus());
     }
+
+    @GetMapping("/Presences")
+    public ResponseEntity<CustomResponse> getPresences(){
+        CustomResponse response = presenceService.getPresences();
+        return new ResponseEntity<>(response, response.getStatus());
+    }
+
+    @PutMapping("/Presences/{id}")
+    public ResponseEntity<CustomResponse> updatePresence(@ModelAttribute PresenceModel presence, @PathVariable String id){
+        CustomResponse response = presenceService.updatePresence(id, presence);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
 }

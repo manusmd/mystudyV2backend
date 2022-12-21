@@ -62,4 +62,34 @@ public class PresenceService {
             return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
+
+    public CustomResponse getPresences() {
+        try {
+            List<PresenceModel> foundPresences = presenceRepository.findAll();
+            return CustomResponse.FOUND_FETCHED_LIST(foundPresences, "Presence");
+        } catch (Exception e) {
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        }
+    }
+
+    public CustomResponse updatePresence(String id, PresenceModel presence) {
+        try {
+            PresenceModel foundPresence = PresenceModel.presenceExists(id, presenceRepository);
+            StudentModel.studentExists(presence.getStudentId(), studentRepository);
+            EventModel.eventExists(presence.getEventId(), eventRepository);
+            PresenceModel.presenceLegit(presence);
+            foundPresence.setStudentId(presence.getStudentId());
+            foundPresence.setEventId(presence.getEventId());
+            foundPresence.setIsExcused(presence.getIsExcused());
+            foundPresence.setIsPresent(presence.getIsPresent());
+            PresenceModel updatedPresence = presenceRepository.save(foundPresence);
+            return CustomResponse.OK_PUT(updatedPresence, "Presence");
+        } catch (Exception e) {
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
+        } catch (ResourceConflict e) {
+            return CustomResponse.CONFLICT(e.getMessage());
+        }
+    }
 }

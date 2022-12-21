@@ -25,9 +25,7 @@ public class PresenceModel {
         if (foundPresence.isPresent()) {
             throw new ResourceExists(foundPresence.get(), "Presence", "StudentId and EventId");
         }
-        if(presence.getIsExcused() && presence.getIsPresent()){
-            throw new ResourceConflict("Cannot be excused and present at the same time");
-        }
+        presenceLegit(presence);
     }
 
     public static PresenceModel presenceExists(String id, PresenceRepository presenceRepository) throws ResourceNotFound {
@@ -36,6 +34,12 @@ public class PresenceModel {
             throw new ResourceNotFound("Presence", id);
         }
         return foundPresence.get();
+    }
+
+    public static void presenceLegit(PresenceModel presence) throws ResourceConflict {
+        if(presence.getIsExcused() && presence.getIsPresent()){
+            throw new ResourceConflict("Cannot be excused and present at the same time");
+        }
     }
 
 
