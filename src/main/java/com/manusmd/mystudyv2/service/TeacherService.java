@@ -4,11 +4,11 @@ import com.manusmd.mystudyv2.model.TeacherModel;
 import com.manusmd.mystudyv2.repository.TeacherRepository;
 import com.manusmd.mystudyv2.response.CustomResponse;
 import com.manusmd.mystudyv2.throwable.ResourceExists;
+import com.manusmd.mystudyv2.throwable.ResourceNotFound;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -17,26 +17,24 @@ public class TeacherService {
 
     public CustomResponse createTeacher(TeacherModel teacher) {
         try {
-            Optional<TeacherModel> foundTeacher = teacherRepository.findByEmail(teacher.getEmail());
-            if (foundTeacher.isPresent()) {
-                return CustomResponse.ALREADY_EXISTS(teacher, "Teacher", "mail");
-            }
+            TeacherModel.canCreate(teacher, teacherRepository);
             TeacherModel newTeacher = teacherRepository.save(teacher);
             return CustomResponse.CREATED(newTeacher, "Teacher");
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceExists e) {
+            return CustomResponse.ALREADY_EXISTS(e.getResource(), e.getResourceName(), e.getCheckedProperty());
         }
     }
 
     public CustomResponse getTeacher(String id) {
         try {
-            Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
-            if (foundTeacher.isEmpty()) {
-                return CustomResponse.NOT_FOUND("Teacher", id);
-            }
-            return CustomResponse.FOUND(foundTeacher.get(), "Teacher");
+            TeacherModel foundTeacher = TeacherModel.teacherExists(id, teacherRepository);
+            return CustomResponse.FOUND(foundTeacher, "Teacher");
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
 
@@ -51,47 +49,42 @@ public class TeacherService {
 
     public CustomResponse updateTeacher(String id, TeacherModel teacher) {
         try {
-            Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
-            if (foundTeacher.isEmpty()) {
-                return CustomResponse.NOT_FOUND("Teacher", id);
-            }
+            TeacherModel.teacherExists(id, teacherRepository);
             TeacherModel.checkEmailChangeLegit(teacher, teacherRepository);
-
             teacher.setId(id);
             TeacherModel updatedTeacher = teacherRepository.save(teacher);
             return CustomResponse.OK_PUT(updatedTeacher, "Teacher");
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         } catch (ResourceExists e) {
-            return CustomResponse.ALREADY_EXISTS(e.getResource(), e.getResourceName(),e.getCheckedProperty());
+            return CustomResponse.ALREADY_EXISTS(e.getResource(), e.getResourceName(), e.getCheckedProperty());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
 
     public CustomResponse toggleStatus(String id) {
         try {
-            Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
-            if (foundTeacher.isEmpty()) {
-                return CustomResponse.NOT_FOUND("Teacher", id);
-            }
-            TeacherModel teacher = foundTeacher.get();
-            teacher.setActive(!teacher.isActive());
-            TeacherModel updatedTeacher = teacherRepository.save(teacher);
+            TeacherModel foundTeacher = TeacherModel.teacherExists(id, teacherRepository);
+            foundTeacher.setActive(!foundTeacher.isActive());
+            TeacherModel updatedTeacher = teacherRepository.save(foundTeacher);
             return CustomResponse.OK_PUT(updatedTeacher, "Teacher");
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
 
     public CustomResponse deleteTeacher(String id) {
         try {
-            Optional<TeacherModel> foundTeacher = teacherRepository.findById(id);
-            if (foundTeacher.isEmpty()) {
-                return CustomResponse.NOT_FOUND("Teacher", id);
-            }
-            teacherRepository.deleteById(id);
+            TeacherModel foundTeacher = TeacherModel.teacherExists(id, teacherRepository);
+            teacherRepository.deleteById(foundTeacher.getId());
             return CustomResponse.OK_DELETE("Teacher", id);
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
 }
