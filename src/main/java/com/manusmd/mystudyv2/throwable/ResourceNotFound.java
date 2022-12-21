@@ -7,10 +7,10 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = false)
 public class ResourceNotFound extends Throwable {
     private String resource;
-    private String message;
-    public ResourceNotFound(String resource, String message) {
+    private String id;
+    public ResourceNotFound(String resource, String id) {
         this.resource = resource;
-        this.message = message;
+        this.id = id;
     }
 }
 
