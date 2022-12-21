@@ -92,4 +92,16 @@ public class PresenceService {
             return CustomResponse.CONFLICT(e.getMessage());
         }
     }
+
+    public CustomResponse deletePresence(String id) {
+        try {
+            PresenceModel foundPresence = PresenceModel.presenceExists(id, presenceRepository);
+            presenceRepository.delete(foundPresence);
+            return CustomResponse.OK_DELETE("Presence", id);
+        } catch (Exception e) {
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
+        }
+    }
 }

@@ -41,4 +41,10 @@ public class PresenceController {
         CustomResponse response = presenceService.updatePresence(id, presence);
         return new ResponseEntity<>(response, response.getStatus());
     }
+
+    @DeleteMapping("/Presences/{id}")
+    public ResponseEntity<CustomResponse> deletePresence(@PathVariable String id){
+        CustomResponse response = presenceService.deletePresence(id);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
 }
