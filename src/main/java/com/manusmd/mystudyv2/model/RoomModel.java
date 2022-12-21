@@ -27,10 +27,10 @@ public class RoomModel {
         }
     }
 
-    public static void isRoomAvailable(EventModel event, RoomRepository roomRepository, EventRepository eventRepository) throws ResourceConflict {
+    public static void isRoomAvailable(EventModel event, RoomRepository roomRepository, EventRepository eventRepository) throws ResourceConflict, ResourceNotFound {
         Optional<RoomModel> foundRoom = roomRepository.findById(event.getRoom());
         if (foundRoom.isEmpty()) {
-            throw new ResourceConflict("Room " + event.getRoom() + " not found");
+            throw new ResourceNotFound("Room " , event.getRoom());
         }
         if (foundRoom.get().getCapacity() < event.getStudents().size()) {
             throw new ResourceConflict(foundRoom.get().name + " is not big enough");
@@ -40,12 +40,11 @@ public class RoomModel {
         }
     }
 
-    public static boolean canCreate(RoomModel room, RoomRepository roomRepository) throws ResourceExists {
+    public static void canCreate(RoomModel room, RoomRepository roomRepository) throws ResourceExists {
         Optional<RoomModel> foundRoom = roomRepository.findByName(room.getName());
         if (foundRoom.isPresent()) {
             throw new ResourceExists(room, "Room ", "name");
         }
-        return true;
     }
 
     public static RoomModel roomExistsById(String id, RoomRepository roomRepository) throws ResourceNotFound {
