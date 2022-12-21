@@ -6,11 +6,11 @@ import com.manusmd.mystudyv2.repository.StudentRepository;
 import com.manusmd.mystudyv2.repository.TransactionRepository;
 import com.manusmd.mystudyv2.response.CustomResponse;
 import com.manusmd.mystudyv2.response.TransactionResponse;
+import com.manusmd.mystudyv2.throwable.ResourceNotFound;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -20,12 +20,8 @@ public class TransactionService {
 
     public CustomResponse createTransaction(TransactionModel transaction) {
         try {
-            Optional<StudentModel> foundStudent = studentRepository.findById(transaction.getStudentId());
-            if (foundStudent.isEmpty()) {
-                return CustomResponse.NOT_FOUND("Student", transaction.getStudentId());
-            }
-            StudentModel updatedStudent = foundStudent.get()
-                    .bookBalanceAndSave(transaction.getValue(), studentRepository);
+            StudentModel foundStudent = StudentModel.studentExists(transaction.getStudentId(), studentRepository);
+            StudentModel updatedStudent = foundStudent.bookBalanceAndSave(transaction.getValue(), studentRepository);
             TransactionModel createdTransaction = transactionRepository.save(transaction);
             TransactionResponse response = new TransactionResponse();
             response.copyTransaction(createdTransaction);
@@ -33,18 +29,19 @@ public class TransactionService {
             return CustomResponse.CREATED(response, "Transaction");
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
 
     public CustomResponse getTransaction(String id) {
         try {
-            Optional<TransactionModel> foundTransaction = transactionRepository.findById(id);
-            if (foundTransaction.isEmpty()) {
-                return CustomResponse.NOT_FOUND("Transaction", id);
-            }
-            return CustomResponse.FOUND(foundTransaction.get(), "Transaction");
+            TransactionModel foundTransaction = TransactionModel.transactionExists(id, transactionRepository);
+            return CustomResponse.FOUND(foundTransaction, "Transaction");
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
 
@@ -59,35 +56,27 @@ public class TransactionService {
 
     public CustomResponse getTransactionsByStudentId(String studentId) {
         try {
-            Optional<StudentModel> foundStudent = studentRepository.findById(studentId);
-            if (foundStudent.isEmpty()) {
-                return CustomResponse.NOT_FOUND("Student", studentId);
-            }
+            StudentModel.studentExists(studentId, studentRepository);
             List<TransactionModel> foundTransactions = transactionRepository.findByStudentId(studentId);
             return CustomResponse.FOUND_FETCHED_LIST(foundTransactions, "Transaction");
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
 
 
     public CustomResponse updateTransaction(TransactionModel transaction, String id) {
         try {
-            Optional<TransactionModel> foundTransaction = transactionRepository.findById(id);
-            if (foundTransaction.isEmpty()) {
-                return CustomResponse.NOT_FOUND("Transaction", id);
-            }
-            if (!transaction.getStudentId().equals(foundTransaction.get().getStudentId())) {
+            TransactionModel foundTransaction = TransactionModel.transactionExists(id, transactionRepository);
+            if (!transaction.getStudentId().equals(foundTransaction.getStudentId())) {
                 return CustomResponse.PUT_NOT_ALLOWED("Can't change studentId!");
             }
-            Optional<StudentModel> foundStudent = studentRepository.findById(transaction.getStudentId());
-            if (foundStudent.isEmpty()) {
-                return CustomResponse.NOT_FOUND("Transaction", id);
-            }
-            Double delta = transaction.getValue() - foundTransaction.get().getValue();
-            StudentModel updatedStudent = foundStudent.get().bookBalanceAndSave(delta, studentRepository);
-            TransactionModel updatedTransaction = foundTransaction.get()
-                    .updateAndSave(id, transaction, transactionRepository);
+            StudentModel foundStudent = StudentModel.studentExists(transaction.getStudentId(), studentRepository);
+            Double delta = transaction.getValue() - foundTransaction.getValue();
+            StudentModel updatedStudent = foundStudent.bookBalanceAndSave(delta, studentRepository);
+            TransactionModel updatedTransaction = foundTransaction.updateAndSave(id, transaction, transactionRepository);
 
             TransactionResponse response = new TransactionResponse();
             response.copyTransaction(updatedTransaction);
@@ -96,25 +85,23 @@ public class TransactionService {
             return CustomResponse.OK_PUT(response, "Transaction");
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
 
     public CustomResponse deleteTransaction(String id) {
         try {
-            Optional<TransactionModel> foundTransaction = transactionRepository.findById(id);
-            if (foundTransaction.isEmpty()) {
-                return CustomResponse.NOT_FOUND("Transaction", id);
-            }
-            Optional<StudentModel> foundStudent = studentRepository.findById(foundTransaction.get().getStudentId());
-            if (foundStudent.isEmpty()) {
-                return CustomResponse.NOT_FOUND("Student", foundTransaction.get().getStudentId());
-            }
-            Double correctionValue = -foundTransaction.get().getValue();
-            StudentModel updatedStudent = foundStudent.get().bookBalanceAndSave(correctionValue, studentRepository);
+            TransactionModel foundTransaction = TransactionModel.transactionExists(id, transactionRepository);
+            StudentModel foundStudent = StudentModel.studentExists(foundTransaction.getStudentId(), studentRepository);
+            Double correctionValue = -foundTransaction.getValue();
+            StudentModel updatedStudent = foundStudent.bookBalanceAndSave(correctionValue, studentRepository);
             transactionRepository.deleteById(id);
             return CustomResponse.OK_DELETE("Transaction", id, "New balance: " + updatedStudent.getBalance());
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
 }
