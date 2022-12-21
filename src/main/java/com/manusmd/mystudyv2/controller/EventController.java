@@ -35,4 +35,10 @@ public class EventController {
         CustomResponse response = eventService.updateEvent(id, event);
         return new ResponseEntity<>(response, response.getStatus());
     }
+
+    @DeleteMapping("/Events/{id}")
+    public ResponseEntity<CustomResponse> deleteEvent(@PathVariable String id) {
+        CustomResponse response = eventService.deleteEvent(id);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
 }

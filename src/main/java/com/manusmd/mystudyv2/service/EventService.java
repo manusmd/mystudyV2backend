@@ -101,4 +101,16 @@ public class EventService {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
     }
+
+    public CustomResponse deleteEvent(String id) {
+        try {
+            EventModel foundEvent = eventRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Event", id));
+            eventRepository.delete(foundEvent);
+            return CustomResponse.OK_DELETE("Event", id);
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getMessage());
+        } catch (Exception e) {
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        }
+    }
 }
