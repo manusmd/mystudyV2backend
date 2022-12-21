@@ -2,6 +2,7 @@ package com.manusmd.mystudyv2.model;
 
 import com.manusmd.mystudyv2.repository.EventRepository;
 import com.manusmd.mystudyv2.throwable.ResourceConflict;
+import com.manusmd.mystudyv2.throwable.ResourceNotFound;
 import com.mongodb.lang.NonNull;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -11,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Document("events")
@@ -75,5 +77,13 @@ public class EventModel {
             throw new ResourceConflict("Student(s) " + uniqueBlockedStudents.toString()
                     .replaceAll("\\[(.*?)\\]", "$1") + " has/have another event at this time");
         }
+    }
+
+    public static EventModel eventExists(String id, EventRepository eventRepository) throws ResourceNotFound {
+        Optional<EventModel> foundEvent = eventRepository.findById(id);
+        if (foundEvent.isEmpty()) {
+            throw new ResourceNotFound("Event", id);
+        }
+        return foundEvent.get();
     }
 }
