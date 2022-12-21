@@ -3,6 +3,7 @@ package com.manusmd.mystudyv2.model;
 import com.manusmd.mystudyv2.repository.PresenceRepository;
 import com.manusmd.mystudyv2.throwable.ResourceConflict;
 import com.manusmd.mystudyv2.throwable.ResourceExists;
+import com.manusmd.mystudyv2.throwable.ResourceNotFound;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -27,7 +28,14 @@ public class PresenceModel {
         if(presence.getIsExcused() && presence.getIsPresent()){
             throw new ResourceConflict("Cannot be excused and present at the same time");
         }
+    }
 
+    public static PresenceModel presenceExists(String id, PresenceRepository presenceRepository) throws ResourceNotFound {
+        Optional<PresenceModel> foundPresence = presenceRepository.findById(id);
+        if(foundPresence.isEmpty()){
+            throw new ResourceNotFound("Presence", id);
+        }
+        return foundPresence.get();
     }
 
 

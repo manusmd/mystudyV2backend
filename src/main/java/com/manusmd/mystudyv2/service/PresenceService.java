@@ -37,4 +37,15 @@ public class PresenceService {
             return CustomResponse.CONFLICT(e.getMessage());
         }
     }
+
+    public CustomResponse getPresence(String id) {
+        try {
+            PresenceModel foundPresence = PresenceModel.presenceExists(id, presenceRepository);
+            return CustomResponse.FOUND(foundPresence, "Presence");
+        } catch (Exception e) {
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
+        }
+    }
 }
