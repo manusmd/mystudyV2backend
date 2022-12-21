@@ -31,39 +31,49 @@ public class EventModel {
     private LocalDateTime endDateTime;
 
     public boolean checkDateTimeLegit(EventModel event) {
-        if (event.startDateTime.isAfter(startDateTime) && event.startDateTime.isBefore(endDateTime)) {
+        if (event.startDateTime.isAfter(this.startDateTime) && event.startDateTime.isBefore(this.endDateTime)) {
             return false;
         }
-        return !event.endDateTime.isAfter(startDateTime) || !event.endDateTime.isBefore(endDateTime);
+        return !event.endDateTime.isAfter(this.startDateTime) || !event.endDateTime.isBefore(this.endDateTime);
     }
 
     public boolean checkDateTimeLegit(List<EventModel> events) {
         List<EventModel> filteredEvents = events.stream()
-                .filter(event -> event.startDateTime.isAfter(startDateTime) && event.startDateTime.isBefore(endDateTime) || event.endDateTime.isAfter(startDateTime) && event.endDateTime.isBefore(endDateTime))
+                .filter(event -> event.startDateTime.isAfter(this.startDateTime) && event.startDateTime.isBefore(this.endDateTime) || event.endDateTime.isAfter(startDateTime) && event.endDateTime.isBefore(endDateTime))
                 .toList();
 
         return filteredEvents.size() == 0;
     }
 
-    public static void checkTeacherHasTime(EventModel event, String teacher, EventRepository eventRepository) throws ResourceConflict {
-        List<EventModel> events = eventRepository.findAllByTeacher(teacher);
-        if(!event.checkDateTimeLegit(events)){
-            throw new ResourceConflict("Teacher " + teacher + " has another event at this time");
+    public static void checkTeacherHasTime(EventModel event, EventRepository eventRepository) throws ResourceConflict {
+        List<EventModel> events = eventRepository.findAllByTeacher(event.getTeacher());
+        if (!event.checkDateTimeLegit(events)) {
+            throw new ResourceConflict("Teacher " + event.getTeacher() + " has another event at this time");
         }
     }
 
     public static void checkStudentsHaveTime(EventModel event, EventRepository eventRepository) throws ResourceConflict {
         List<EventModel> foundStudentEvent = new ArrayList<>();
-        event.getStudents().forEach(student_id -> foundStudentEvent.addAll(eventRepository.findByStudentsContains(student_id)));
         List<String> blockedStudents = new ArrayList<>();
-        for (EventModel studentEvent : foundStudentEvent) {
-            if (!studentEvent.checkDateTimeLegit(event)) {
-                blockedStudents.add(studentEvent.getStudents().get(0));
+
+        event.getStudents()
+                .forEach(student_id -> foundStudentEvent.addAll(eventRepository.findByStudentsContains(student_id)));
+
+        List<EventModel> uniqueFoundStudentEvent = foundStudentEvent.stream().distinct().toList();
+
+        for (EventModel studentEvent : uniqueFoundStudentEvent) {
+            for (String student_id : event.getStudents()) {
+                if (studentEvent.getStudents().contains(student_id) && !studentEvent.checkDateTimeLegit(event)) {
+                    blockedStudents.add(student_id);
+                }
             }
         }
 
+        List<String> uniqueBlockedStudents = blockedStudents.stream().distinct().toList();
+
         if (!event.checkDateTimeLegit(foundStudentEvent)) {
-            throw new ResourceConflict("Student " + blockedStudents + " has another event at this time");
+            throw new ResourceConflict("Student(s) " + uniqueBlockedStudents.toString()
+                    .replaceAll("\\[(.*?)\\]", "$1") + " has/have another event at this time");
         }
     }
 }

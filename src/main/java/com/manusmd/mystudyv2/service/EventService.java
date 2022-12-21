@@ -14,6 +14,8 @@ import com.manusmd.mystudyv2.throwable.ResourceNotFound;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 @AllArgsConstructor
 public class EventService {
@@ -26,7 +28,7 @@ public class EventService {
         try {
             StudentModel.studentsExist(event.getStudents(), studentRepository);
             TeacherModel.teacherExists(event.getTeacher(), teacherRepository);
-            EventModel.checkTeacherHasTime(event, event.getTeacher(), eventRepository);
+            EventModel.checkTeacherHasTime(event, eventRepository);
             EventModel.checkStudentsHaveTime(event, eventRepository);
             RoomModel.isRoomAvailable(event, roomRepository, eventRepository);
             EventModel newEvent = eventRepository.save(event);
@@ -55,6 +57,46 @@ public class EventService {
     public CustomResponse getEvents() {
         try {
             return CustomResponse.FOUND_FETCHED_LIST(eventRepository.findAll(), "Events");
+        } catch (Exception e) {
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        }
+    }
+
+    public CustomResponse updateEvent(String id, EventModel event) {
+        try {
+            EventModel foundEvent = eventRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Event", id));
+            if (!Objects.equals(event.getTeacher(), foundEvent.getTeacher())) {
+                TeacherModel.teacherExists(event.getTeacher(), teacherRepository);
+                EventModel.checkTeacherHasTime(event, eventRepository);
+                foundEvent.setTeacher(event.getTeacher());
+            }
+            if (!event.getStudents().equals(foundEvent.getStudents())) {
+                StudentModel.studentsExist(event.getStudents(), studentRepository);
+                EventModel.checkStudentsHaveTime(event, eventRepository);
+                foundEvent.setStudents(event.getStudents());
+            }
+            if (!event.getRoom().equals(foundEvent.getRoom())) {
+                RoomModel.isRoomAvailable(event, roomRepository, eventRepository);
+                foundEvent.setRoom(event.getRoom());
+            }
+            if (!event.getStartDateTime().equals(foundEvent.getStartDateTime())) {
+                EventModel.checkTeacherHasTime(event, eventRepository);
+                EventModel.checkStudentsHaveTime(event, eventRepository);
+                RoomModel.isRoomAvailable(event, roomRepository, eventRepository);
+                foundEvent.setStartDateTime(event.getStartDateTime());
+            }
+            if (!event.getEndDateTime().equals(foundEvent.getEndDateTime())) {
+                EventModel.checkTeacherHasTime(event, eventRepository);
+                EventModel.checkStudentsHaveTime(event, eventRepository);
+                RoomModel.isRoomAvailable(event, roomRepository, eventRepository);
+                foundEvent.setEndDateTime(event.getEndDateTime());
+            }
+            EventModel updatedEvent = eventRepository.save(foundEvent);
+            return CustomResponse.OK_PUT(updatedEvent, "Event");
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getMessage());
+        } catch (ResourceConflict e) {
+            return CustomResponse.CONFLICT(e.getMessage());
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }

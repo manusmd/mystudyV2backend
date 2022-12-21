@@ -13,20 +13,26 @@ public class EventController {
     EventService eventService;
 
     @PostMapping("/Events")
-    public ResponseEntity<CustomResponse> createEvent(@ModelAttribute EventModel event){
+    public ResponseEntity<CustomResponse> createEvent(@ModelAttribute EventModel event) {
         CustomResponse response = eventService.createEvent(event);
-        return new ResponseEntity<>(response,response.getStatus());
+        return new ResponseEntity<>(response, response.getStatus());
     }
 
     @GetMapping("/Events/{id}")
-    public ResponseEntity<CustomResponse> getEvent(@PathVariable String id){
+    public ResponseEntity<CustomResponse> getEvent(@PathVariable String id) {
         CustomResponse response = eventService.getEvent(id);
-        return new ResponseEntity<>(response,response.getStatus());
+        return new ResponseEntity<>(response, response.getStatus());
     }
 
     @GetMapping("/Events")
-    public ResponseEntity<CustomResponse> getEvents(){
+    public ResponseEntity<CustomResponse> getEvents() {
         CustomResponse response = eventService.getEvents();
-        return new ResponseEntity<>(response,response.getStatus());
+        return new ResponseEntity<>(response, response.getStatus());
+    }
+
+    @PutMapping("/Events/{id}")
+    public ResponseEntity<CustomResponse> updateEvent(@ModelAttribute EventModel event, @PathVariable String id) {
+        CustomResponse response = eventService.updateEvent(id, event);
+        return new ResponseEntity<>(response, response.getStatus());
     }
 }
