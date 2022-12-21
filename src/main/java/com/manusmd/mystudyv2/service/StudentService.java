@@ -3,6 +3,7 @@ package com.manusmd.mystudyv2.service;
 import com.manusmd.mystudyv2.model.StudentModel;
 import com.manusmd.mystudyv2.repository.StudentRepository;
 import com.manusmd.mystudyv2.response.CustomResponse;
+import com.manusmd.mystudyv2.throwable.ResourceExists;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -50,14 +51,15 @@ public class StudentService {
             if (foundStudent.isEmpty()) {
                 return CustomResponse.NOT_FOUND("Student", id);
             }
-            if (!foundStudent.get().checkEmailChangeLegit(student, studentRepository)) {
-                return CustomResponse.ALREADY_EXISTS(student, "Student", "mail");
-            }
+            StudentModel.checkEmailChangeLegit(student, studentRepository);
             student.setId(id);
             StudentModel updatedStudent = studentRepository.save(student);
             return CustomResponse.OK_PUT(updatedStudent, "Student");
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceExists e) {
+            return CustomResponse.ALREADY_EXISTS(e.getResource(), e.getResourceName(),e.getCheckedProperty());
+
         }
     }
     public CustomResponse toggleStatus(String id) {

@@ -3,6 +3,7 @@ package com.manusmd.mystudyv2.service;
 import com.manusmd.mystudyv2.model.TeacherModel;
 import com.manusmd.mystudyv2.repository.TeacherRepository;
 import com.manusmd.mystudyv2.response.CustomResponse;
+import com.manusmd.mystudyv2.throwable.ResourceExists;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -54,14 +55,15 @@ public class TeacherService {
             if (foundTeacher.isEmpty()) {
                 return CustomResponse.NOT_FOUND("Teacher", id);
             }
-            if (!foundTeacher.get().checkEmailChangeLegit(teacher, teacherRepository)) {
-                return CustomResponse.ALREADY_EXISTS(teacher, "Teacher", "mail");
-            }
+            TeacherModel.checkEmailChangeLegit(teacher, teacherRepository);
+
             teacher.setId(id);
             TeacherModel updatedTeacher = teacherRepository.save(teacher);
             return CustomResponse.OK_PUT(updatedTeacher, "Teacher");
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceExists e) {
+            return CustomResponse.ALREADY_EXISTS(e.getResource(), e.getResourceName(),e.getCheckedProperty());
         }
     }
 
