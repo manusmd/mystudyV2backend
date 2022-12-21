@@ -3,11 +3,12 @@ package com.manusmd.mystudyv2.service;
 import com.manusmd.mystudyv2.model.RoomModel;
 import com.manusmd.mystudyv2.repository.RoomRepository;
 import com.manusmd.mystudyv2.response.CustomResponse;
+import com.manusmd.mystudyv2.throwable.ResourceExists;
+import com.manusmd.mystudyv2.throwable.ResourceNotFound;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -16,26 +17,24 @@ public class RoomService {
 
     public CustomResponse createRoom(RoomModel room) {
         try {
-            Optional<RoomModel> foundRoom = roomRepository.findByName(room.getName());
-            if (foundRoom.isPresent()) {
-                return CustomResponse.ALREADY_EXISTS(room, "Room", "name");
-            }
+            RoomModel.canCreate(room, roomRepository);
             RoomModel newRoom = roomRepository.save(room);
             return CustomResponse.CREATED(newRoom, "Room");
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceExists e) {
+            return CustomResponse.ALREADY_EXISTS(e.getResource(), e.getResourceName(), e.getCheckedProperty());
         }
     }
 
     public CustomResponse getRoom(String id) {
         try {
-            Optional<RoomModel> foundRoom = roomRepository.findById(id);
-            if (foundRoom.isEmpty()) {
-                return CustomResponse.NOT_FOUND("Room", id);
-            }
-            return CustomResponse.FOUND(foundRoom.get(), "Room");
+            RoomModel foundRoom = RoomModel.roomExistsById(id, roomRepository);
+            return CustomResponse.FOUND(foundRoom, "Room");
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
 
@@ -50,33 +49,33 @@ public class RoomService {
 
     public CustomResponse updateRoom(String id, RoomModel room) {
         try {
-            Optional<RoomModel> foundRoom = roomRepository.findById(id);
-            if (foundRoom.isEmpty()) {
-                return CustomResponse.NOT_FOUND("Room", id);
+            RoomModel foundRoom = RoomModel.roomExistsById(id, roomRepository);
+            if (!foundRoom.getName().equals(room.getName())) {
+                RoomModel.checkNameChangeLegit(room, roomRepository);
             }
-            if (foundRoom.get().checkNameChangeLegit(room, roomRepository)) {
-                return CustomResponse.ALREADY_EXISTS(room, "Room", "name");
-            }
-            if (room.getName() != null) foundRoom.get().setName(room.getName());
-            if (room.getCapacity() != null) foundRoom.get().setCapacity(room.getCapacity());
-            if (room.getNotes() != null) foundRoom.get().setNotes(room.getNotes());
-            RoomModel updatedRoom = roomRepository.save(foundRoom.get());
+            if (room.getName() != null) foundRoom.setName(room.getName());
+            if (room.getCapacity() != null) foundRoom.setCapacity(room.getCapacity());
+            if (room.getNotes() != null) foundRoom.setNotes(room.getNotes());
+            RoomModel updatedRoom = roomRepository.save(foundRoom);
             return CustomResponse.OK_PUT(updatedRoom, "Room");
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
+        } catch (ResourceExists e) {
+            return CustomResponse.ALREADY_EXISTS(e.getResource(), e.getResourceName(), e.getCheckedProperty());
         }
     }
 
     public CustomResponse deleteRoom(String id) {
         try {
-            Optional<RoomModel> foundRoom = roomRepository.findById(id);
-            if (foundRoom.isEmpty()) {
-                return CustomResponse.NOT_FOUND("Room", id);
-            }
+            RoomModel foundRoom = RoomModel.roomExistsById(id, roomRepository);
             roomRepository.deleteById(id);
-            return CustomResponse.OK_DELETE("Room", id);
+            return CustomResponse.OK_DELETE("Room", foundRoom.getId());
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
 }

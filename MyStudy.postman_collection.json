@@ -7,207 +7,1583 @@
 	},
 	"item": [
 		{
-			"name": "Create teacher",
-			"event": [
+			"name": "Teacher",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"let jsonData = pm.response.json();",
-							"pm.environment.set(\"TEACHER_ID\", jsonData.data.id);",
-							"",
-							"pm.test(\"Successful POST request\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
+					"name": "Create teacher",
+					"event": [
 						{
-							"key": "firstName",
-							"value": "\"Manuel\"",
-							"type": "text"
-						},
-						{
-							"key": "lastName",
-							"value": "\"Schmid\"",
-							"type": "text"
-						},
-						{
-							"key": "email",
-							"value": "\"manuel.schmid@js-tut.de\"",
-							"type": "text"
-						},
-						{
-							"key": "street",
-							"value": "\"Alemannenstr.\"",
-							"type": "text"
-						},
-						{
-							"key": "house",
-							"value": "\"1\"",
-							"type": "text"
-						},
-						{
-							"key": "city",
-							"value": "\"Dürbheim\"",
-							"type": "text"
-						},
-						{
-							"key": "postcode",
-							"value": "\"78589\"",
-							"type": "text"
-						},
-						{
-							"key": "phone",
-							"value": "\"01723758429\"",
-							"type": "text"
-						},
-						{
-							"key": "subjects",
-							"value": "[\"English\",\"German\"]",
-							"type": "text"
-						},
-						{
-							"key": "hourlyRate",
-							"value": "12.5",
-							"type": "text"
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"pm.environment.set(\"TEACHER_ID\", jsonData.data.id);",
+									"",
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
+									"});",
+									"",
+									"pm.sendRequest(`${pm.environment.get(\"BASE_URL\")}/teachers`, function (err, response) {",
+									"    let allTeachers = response.json();",
+									"    pm.test(\"Is teacher in DB\", function(){",
+									"    pm.expect(_isContains(allTeachers.data[0],\"phone\", pm.request.body.formdata.get('phone'))).to.be.true",
+									"    });",
+									"});",
+									"",
+									"function _isContains(json, keyname, value) {",
+									"return Object.keys(json).some(key => {",
+									"        return typeof json[key] === 'object' ? ",
+									"        _isContains(json[key], keyname, value) : key === keyname && json[key] === value;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
 						}
-					]
-				},
-				"url": {
-					"raw": "{{BASE_URL}}/teachers",
-					"host": [
-						"{{BASE_URL}}"
 					],
-					"path": [
-						"teachers"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Update teacher",
-			"event": [
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "Manuel",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "Schmid",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "manuel.schmid@js-tut.de",
+									"type": "text"
+								},
+								{
+									"key": "street",
+									"value": "Alemannenstr.",
+									"type": "text"
+								},
+								{
+									"key": "house",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Berlin",
+									"type": "text"
+								},
+								{
+									"key": "postcode",
+									"value": "78589",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "01723758429",
+									"type": "text"
+								},
+								{
+									"key": "subjects",
+									"value": "English,German",
+									"type": "text"
+								},
+								{
+									"key": "hourlyRate",
+									"value": "12.5",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Teachers",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Teachers"
+							]
+						}
+					},
+					"response": []
+				},
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"let jsonData = pm.response.json();",
-							"pm.environment.set(\"TEACHER_ID\", jsonData.data.id);",
-							"",
-							"pm.test(\"Successful POST request\", function () {",
-							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
+					"name": "Update teacher",
+					"event": [
 						{
-							"key": "firstName",
-							"value": "Manuel",
-							"type": "text"
-						},
-						{
-							"key": "lastName",
-							"value": "Schmid",
-							"type": "text"
-						},
-						{
-							"key": "email",
-							"value": "manuel.schmid@js-tut.de",
-							"type": "text"
-						},
-						{
-							"key": "street",
-							"value": "Alemannenstr.",
-							"type": "text"
-						},
-						{
-							"key": "house",
-							"value": "1",
-							"type": "text"
-						},
-						{
-							"key": "city",
-							"value": "Dürbheim",
-							"type": "text"
-						},
-						{
-							"key": "postcode",
-							"value": "78589",
-							"type": "text"
-						},
-						{
-							"key": "phone",
-							"value": "01723758429",
-							"type": "text"
-						},
-						{
-							"key": "subjects",
-							"value": "English,German",
-							"type": "text"
-						},
-						{
-							"key": "hourlyRate",
-							"value": "12.5",
-							"type": "text"
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"pm.environment.set(\"TEACHER_ID\", jsonData.data.id);",
+									"",
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
 						}
-					]
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "Manuel",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "Schmid",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "manuel.schmid@js-tut.de",
+									"type": "text"
+								},
+								{
+									"key": "street",
+									"value": "Alemannenstr.",
+									"type": "text"
+								},
+								{
+									"key": "house",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Dürbheim",
+									"type": "text"
+								},
+								{
+									"key": "postcode",
+									"value": "78589",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "01723758429",
+									"type": "text"
+								},
+								{
+									"key": "subjects",
+									"value": "English",
+									"type": "text"
+								},
+								{
+									"key": "hourlyRate",
+									"value": "12.5",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Teachers/{{TEACHER_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Teachers",
+								"{{TEACHER_ID}}"
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{BASE_URL}}/teachers/{{TEACHER_ID}}",
-					"host": [
-						"{{BASE_URL}}"
+				{
+					"name": "Toggle teacher status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"pm.environment.set(\"TEACHER_ID\", jsonData.data.id);",
+									"",
+									"pm.test(\"Successful PUT request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
 					],
-					"path": [
-						"teachers",
-						"{{TEACHER_ID}}"
-					]
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Teachers/{{TEACHER_ID}}/active",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Teachers",
+								"{{TEACHER_ID}}",
+								"active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get teacher by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Teachers/{{TEACHER_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Teachers",
+								"{{TEACHER_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all teachers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Teachers",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Teachers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete teacher",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"pm.environment.set(\"TEACHER_ID\", jsonData.data.id);",
+									"",
+									"pm.test(\"Successful DELETE request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Teachers/{{TEACHER_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Teachers",
+								"{{TEACHER_ID}}"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Get teacher by id",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{BASE_URL}}/teachers/{{TEACHER_ID}}",
-					"host": [
-						"{{BASE_URL}}"
+			"name": "Employee",
+			"item": [
+				{
+					"name": "Create employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"pm.environment.set(\"EMPLOYEE_ID\", jsonData.data.id);",
+									"",
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
 					],
-					"path": [
-						"teachers",
-						"{{TEACHER_ID}}"
-					]
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "Manuel",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "Schmid",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "manuel.schmid@js-tut.de",
+									"type": "text"
+								},
+								{
+									"key": "street",
+									"value": "Alemannenstr.",
+									"type": "text"
+								},
+								{
+									"key": "house",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Dürbheim",
+									"type": "text"
+								},
+								{
+									"key": "postcode",
+									"value": "78589",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "01723758429",
+									"type": "text"
+								},
+								{
+									"key": "hourlyRate",
+									"value": "12.5",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Employees",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Employees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get employee by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Employees/{{EMPLOYEE_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Employees",
+								"{{EMPLOYEE_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all employees",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Employees",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Employees"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"pm.environment.set(\"EMPLOYEE_ID\", jsonData.data.id);",
+									"",
+									"pm.test(\"Successful PUT request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "Manuel",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "Schmid",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "manuel.schmid@js-tuut.de",
+									"type": "text"
+								},
+								{
+									"key": "street",
+									"value": "Alemannenstr.",
+									"type": "text"
+								},
+								{
+									"key": "house",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Dürbheim",
+									"type": "text"
+								},
+								{
+									"key": "postcode",
+									"value": "78589",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "01723758429",
+									"type": "text"
+								},
+								{
+									"key": "hourlyRate",
+									"value": "12.5",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Employees/{{EMPLOYEE_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Employees",
+								"{{EMPLOYEE_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle employee status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"pm.environment.set(\"EMPLOYEE_ID\", jsonData.data.id);",
+									"",
+									"pm.test(\"Successful PUT request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Employees/{{EMPLOYEE_ID}}/active",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Employees",
+								"{{EMPLOYEE_ID}}",
+								"active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete employee",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "Manuel",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "Schmid",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "manuel.schmid@js-tuut.de",
+									"type": "text"
+								},
+								{
+									"key": "street",
+									"value": "Alemannenstr.",
+									"type": "text"
+								},
+								{
+									"key": "house",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Dürbheim",
+									"type": "text"
+								},
+								{
+									"key": "postcode",
+									"value": "78589",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "01723758429",
+									"type": "text"
+								},
+								{
+									"key": "subjects",
+									"value": "English",
+									"type": "text"
+								},
+								{
+									"key": "hourlyRate",
+									"value": "12.5",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Employees/{{EMPLOYEE_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Employees",
+								"{{EMPLOYEE_ID}}"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Get all teachers",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
+			"name": "Student",
+			"item": [
+				{
+					"name": "Create student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"pm.environment.set(\"STUDENT_ID\", jsonData.data.id);",
+									"",
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "Manuel",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "Schmid",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "manuel.schmid@js-tut.de",
+									"type": "text"
+								},
+								{
+									"key": "street",
+									"value": "Alemannenstr.",
+									"type": "text"
+								},
+								{
+									"key": "house",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Dürbheim",
+									"type": "text"
+								},
+								{
+									"key": "postcode",
+									"value": "78589",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "01723758429",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Students",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get student by id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Students/{{STUDENT_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Students",
+								"{{STUDENT_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all students",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Students",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Students"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"pm.environment.set(\"EMPLOYEE_ID\", jsonData.data.id);",
+									"",
+									"pm.test(\"Successful PUT request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "Manuel",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "Schmid",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "manuel.schmid@js-tuuuuut.de",
+									"type": "text"
+								},
+								{
+									"key": "street",
+									"value": "Alemannenstr.",
+									"type": "text"
+								},
+								{
+									"key": "house",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Dürbheim",
+									"type": "text"
+								},
+								{
+									"key": "postcode",
+									"value": "78589",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "01723758429",
+									"type": "text"
+								},
+								{
+									"key": "hourlyRate",
+									"value": "12.5",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Students/{{STUDENT_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Students",
+								"{{STUDENT_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle student status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful PUT request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Students/{{STUDENT_ID}}/active",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Students",
+								"{{STUDENT_ID}}",
+								"active"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "Manuel",
+									"type": "text"
+								},
+								{
+									"key": "lastName",
+									"value": "Schmid",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "manuel.schmid@js-tuut.de",
+									"type": "text"
+								},
+								{
+									"key": "street",
+									"value": "Alemannenstr.",
+									"type": "text"
+								},
+								{
+									"key": "house",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "city",
+									"value": "Dürbheim",
+									"type": "text"
+								},
+								{
+									"key": "postcode",
+									"value": "78589",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "01723758429",
+									"type": "text"
+								},
+								{
+									"key": "subjects",
+									"value": "English",
+									"type": "text"
+								},
+								{
+									"key": "hourlyRate",
+									"value": "12.5",
+									"type": "text"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Students/{{STUDENT_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Students",
+								"{{STUDENT_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Transaction",
+			"item": [
+				{
+					"name": "Create positive transaction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();",
+									"pm.environment.set(\"TRANSACTION_ID\", response.data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "studentId",
+									"value": "{{STUDENT_ID}}",
+									"type": "text"
+								},
+								{
+									"key": "value",
+									"value": "12",
+									"type": "text"
+								},
+								{
+									"key": "date",
+									"value": "{{$isoTimestamp}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Transactions",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create negative transaction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();",
+									"pm.environment.set(\"TRANSACTION_ID\", response.data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "studentId",
+									"value": "{{STUDENT_ID}}",
+									"type": "text"
+								},
+								{
+									"key": "value",
+									"value": "-11",
+									"type": "text"
+								},
+								{
+									"key": "date",
+									"value": "{{$isoTimestamp}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Transactions",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get transaction",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Transactions/{{TRANSACTION_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Transactions",
+								"{{TRANSACTION_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Transactions/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Transactions",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get transactions by student id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Students/{{STUDENT_ID}}/Transactions",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Students",
+								"{{STUDENT_ID}}",
+								"Transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update transaction",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();",
+									"pm.environment.set(\"TRANSACTION_ID\", response.data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "studentId",
+									"value": "{{STUDENT_ID}}",
+									"type": "text"
+								},
+								{
+									"key": "value",
+									"value": "-9",
+									"type": "text"
+								},
+								{
+									"key": "date",
+									"value": "{{$isoTimestamp}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Transactions/{{TRANSACTION_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Transactions",
+								"{{TRANSACTION_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete transaction",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Transactions/{{TRANSACTION_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Transactions",
+								"{{TRANSACTION_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Room",
+			"item": [
+				{
+					"name": "Create room",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();",
+									"pm.environment.set(\"ROOM_ID\", response.data.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Room 1",
+									"type": "text"
+								},
+								{
+									"key": "capacity",
+									"value": "10",
+									"type": "text"
+								},
+								{
+									"key": "notes",
+									"value": "Notice board currently out of order",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Rooms",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get room",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Rooms/{{ROOM_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Rooms",
+								"{{ROOM_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all rooms",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Rooms",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update room",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "Room 1",
+									"type": "text"
+								},
+								{
+									"key": "capacity",
+									"value": "11",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "notes",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Rooms/{{ROOM_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Rooms",
+								"{{ROOM_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete room",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Rooms/{{ROOM_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Rooms",
+								"{{ROOM_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Event",
+			"item": [
+				{
+					"name": "Create event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();",
+									"if(pm.response.code == 200){",
+									"    pm.environment.set(\"EVENT_ID\", response.data.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let time = new Date();",
+									"time.setMinutes(time.getMinutes() + 90);",
+									"let endtime = time.toISOString();",
+									"pm.environment.set(\"endtime\",endtime);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "teacher",
+									"value": "{{TEACHER_ID}}",
+									"type": "text"
+								},
+								{
+									"key": "students",
+									"value": "{{STUDENT_ID}}",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Englisch Gruppenunterricht",
+									"type": "text"
+								},
+								{
+									"key": "startDateTime",
+									"value": "{{$isoTimestamp}}",
+									"type": "text"
+								},
+								{
+									"key": "endDateTime",
+									"value": "{{endtime}}",
+									"type": "text"
+								},
+								{
+									"key": "room",
+									"value": "{{ROOM_ID}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Events",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get event",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Events/{{EVENT_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Events",
+								"{{EVENT_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all events",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Events",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let response = pm.response.json();",
+									"if(pm.response.code == 200){",
+									"    pm.environment.set(\"EVENT_ID\", response.data.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"let time = new Date();",
+									"time.setMinutes(time.getMinutes() + 90);",
+									"let endtime = time.toISOString();",
+									"pm.environment.set(\"endtime\",endtime);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "teacher",
+									"value": "{{TEACHER_ID}}",
+									"type": "text"
+								},
+								{
+									"key": "students",
+									"value": "{{STUDENT_ID}}",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "Englisch Gruppenunterricht",
+									"type": "text"
+								},
+								{
+									"key": "startDateTime",
+									"value": "{{$isoTimestamp}}",
+									"type": "text"
+								},
+								{
+									"key": "endDateTime",
+									"value": "{{endtime}}",
+									"type": "text"
+								},
+								{
+									"key": "room",
+									"value": "{{ROOM_ID}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/Events/{{EVENT_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Events",
+								"{{EVENT_ID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete event",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/Events/{{EVENT_ID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"Events",
+								"{{EVENT_ID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

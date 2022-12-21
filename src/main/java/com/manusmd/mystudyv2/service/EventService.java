@@ -34,7 +34,7 @@ public class EventService {
             EventModel newEvent = eventRepository.save(event);
             return CustomResponse.CREATED(newEvent, "Event");
         } catch (ResourceNotFound e) {
-            return CustomResponse.NOT_FOUND(e.getResource(), e.getMessage());
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         } catch (ResourceConflict e) {
             return CustomResponse.CONFLICT(e.getMessage());
         } catch (Exception e) {
@@ -48,7 +48,7 @@ public class EventService {
             EventModel foundEvent = eventRepository.findById(id).orElseThrow(() -> new ResourceNotFound("Event", id));
             return CustomResponse.FOUND(foundEvent, "Event");
         } catch (ResourceNotFound e) {
-            return CustomResponse.NOT_FOUND(e.getResource(), e.getMessage());
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }
@@ -94,7 +94,7 @@ public class EventService {
             EventModel updatedEvent = eventRepository.save(foundEvent);
             return CustomResponse.OK_PUT(updatedEvent, "Event");
         } catch (ResourceNotFound e) {
-            return CustomResponse.NOT_FOUND(e.getResource(), e.getMessage());
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         } catch (ResourceConflict e) {
             return CustomResponse.CONFLICT(e.getMessage());
         } catch (Exception e) {
@@ -108,7 +108,7 @@ public class EventService {
             eventRepository.delete(foundEvent);
             return CustomResponse.OK_DELETE("Event", id);
         } catch (ResourceNotFound e) {
-            return CustomResponse.NOT_FOUND(e.getResource(), e.getMessage());
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         }

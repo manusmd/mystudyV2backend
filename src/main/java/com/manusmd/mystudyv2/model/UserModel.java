@@ -3,6 +3,7 @@ package com.manusmd.mystudyv2.model;
 import com.manusmd.mystudyv2.repository.EmployeeRepository;
 import com.manusmd.mystudyv2.repository.StudentRepository;
 import com.manusmd.mystudyv2.repository.TeacherRepository;
+import com.manusmd.mystudyv2.throwable.ResourceExists;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -36,17 +37,23 @@ public class UserModel {
         this.phone = phone;
     }
 
-    public boolean checkEmailChangeLegit (TeacherModel teacher, TeacherRepository repository) {
+    public static void checkEmailChangeLegit (TeacherModel teacher, TeacherRepository repository) throws ResourceExists {
         Optional<TeacherModel> foundTeacherByEmail = repository.findByEmail(teacher.getEmail());
-        return foundTeacherByEmail.isEmpty();
+        if(foundTeacherByEmail.isPresent()){
+            throw new ResourceExists(teacher, "Teacher","mail");
+        }
     }
-    public boolean checkEmailChangeLegit (EmployeeModel employee, EmployeeRepository repository) {
+    public static void checkEmailChangeLegit (EmployeeModel employee, EmployeeRepository repository) throws ResourceExists {
         Optional<EmployeeModel> foundEmployeeByEmail = repository.findByEmail(employee.getEmail());
-        return foundEmployeeByEmail.isEmpty();
+        if(foundEmployeeByEmail.isPresent()){
+            throw new ResourceExists(employee, "Employee","mail");
+        }
     }
-    public boolean checkEmailChangeLegit (StudentModel student, StudentRepository repository) {
+    public static void checkEmailChangeLegit (StudentModel student, StudentRepository repository) throws ResourceExists {
         Optional<StudentModel> foundStudentByEmail = repository.findByEmail(student.getEmail());
-        return foundStudentByEmail.isEmpty();
+        if(foundStudentByEmail.isPresent()){
+            throw new ResourceExists(student, "Student","mail");
+        }
     }
 
 
