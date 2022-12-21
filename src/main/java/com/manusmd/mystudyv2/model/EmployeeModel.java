@@ -22,7 +22,7 @@ public class EmployeeModel extends UserModel {
         this.hourlyRate = hourlyRate;
     }
 
-    public static void checkCreationWithThrowable(EmployeeModel employee, EmployeeRepository employeeRepository) throws ResourceExists {
+    public static void canCreate(EmployeeModel employee, EmployeeRepository employeeRepository) throws ResourceExists {
         Optional<EmployeeModel> foundEmployee = employeeRepository.findByEmail(employee.getEmail());
         if (foundEmployee.isPresent()) {
             throw new ResourceExists(employee, "Employee", "mail");

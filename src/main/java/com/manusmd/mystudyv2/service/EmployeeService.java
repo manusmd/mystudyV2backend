@@ -17,7 +17,7 @@ public class EmployeeService {
 
     public CustomResponse createTeacher(EmployeeModel employee) {
         try {
-            EmployeeModel.checkCreationWithThrowable(employee, employeeRepository);
+            EmployeeModel.canCreate(employee, employeeRepository);
             EmployeeModel createdEmployee = employeeRepository.save(employee);
             return CustomResponse.CREATED(createdEmployee, "Employee");
         } catch (Exception e) {
