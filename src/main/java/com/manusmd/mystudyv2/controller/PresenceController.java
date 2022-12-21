@@ -23,4 +23,10 @@ public class PresenceController {
         CustomResponse response = presenceService.getPresence(id);
         return new ResponseEntity<>(response, response.getStatus());
     }
+
+    @GetMapping("/Students/{studentId}/Presences")
+    public ResponseEntity<CustomResponse> getPresencesByStudent(@PathVariable String studentId){
+        CustomResponse response = presenceService.getPresencesByStudent(studentId);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
 }

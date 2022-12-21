@@ -13,6 +13,8 @@ import com.manusmd.mystudyv2.throwable.ResourceNotFound;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class PresenceService {
@@ -42,6 +44,18 @@ public class PresenceService {
         try {
             PresenceModel foundPresence = PresenceModel.presenceExists(id, presenceRepository);
             return CustomResponse.FOUND(foundPresence, "Presence");
+        } catch (Exception e) {
+            return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
+        } catch (ResourceNotFound e) {
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
+        }
+    }
+
+    public CustomResponse getPresencesByStudent(String studentId) {
+        try {
+            StudentModel.studentExists(studentId, studentRepository);
+            List<PresenceModel> foundPresences = presenceRepository.findAllByStudentId(studentId);
+            return CustomResponse.FOUND_FETCHED_LIST(foundPresences, "Presence");
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         } catch (ResourceNotFound e) {
