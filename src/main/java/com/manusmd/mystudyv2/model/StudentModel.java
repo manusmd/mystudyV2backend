@@ -1,6 +1,7 @@
 package com.manusmd.mystudyv2.model;
 
 import com.manusmd.mystudyv2.repository.StudentRepository;
+import com.manusmd.mystudyv2.throwable.ResourceExists;
 import com.manusmd.mystudyv2.throwable.ResourceNotFound;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -44,4 +46,18 @@ public class StudentModel extends UserModel {
         }
     }
 
+    public static void canCreate(StudentModel student, StudentRepository studentRepository) throws ResourceExists {
+        Optional<StudentModel> foundStudent = studentRepository.findByEmail(student.getEmail());
+        if (foundStudent.isPresent()) {
+            throw new ResourceExists(student, "Student", "mail");
+        }
+    }
+
+    public static StudentModel studentExists(String id, StudentRepository studentRepository) throws ResourceNotFound {
+        Optional<StudentModel> student = studentRepository.findById(id);
+        if (student.isEmpty()) {
+            throw new ResourceNotFound("Student", id);
+        }
+        return student.get();
+    }
 }
