@@ -29,10 +29,11 @@ public class EmployeeModel extends UserModel {
         }
     }
 
-    public static void employeeExists(String id, EmployeeRepository employeeRepository) throws ResourceNotFound {
+    public static EmployeeModel employeeExists(String id, EmployeeRepository employeeRepository) throws ResourceNotFound {
         Optional<EmployeeModel> employee = employeeRepository.findById(id);
         if (employee.isEmpty()) {
             throw new ResourceNotFound("Employee", id);
         }
+        return employee.get();
     }
 }
