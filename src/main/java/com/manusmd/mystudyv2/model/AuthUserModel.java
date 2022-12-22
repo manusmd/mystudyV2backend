@@ -32,4 +32,9 @@ public class AuthUserModel {
     @DBRef
     private Set<RoleModel> roles = new HashSet<>();
 
+    public AuthUserModel(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
 }

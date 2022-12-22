@@ -27,7 +27,7 @@ public class CustomResponse {
     }
     public static CustomResponse CREATED(Object data, String resource) {
         String lowerCaseResource = resource.toLowerCase();
-        return new CustomResponse(data, String.format("Successfully created %s", lowerCaseResource), HttpStatus.OK);
+        return new CustomResponse(data, String.format("Successfully created %s", lowerCaseResource), HttpStatus.CREATED);
     }
 
     public static CustomResponse ALREADY_EXISTS(Object data, String resource, String checkedProperty) {
