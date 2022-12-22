@@ -34,7 +34,7 @@ public class EmployeeService {
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         } catch (ResourceNotFound e) {
-            return CustomResponse.NOT_FOUND(e.getResource(),e.getId());
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
 
@@ -50,7 +50,7 @@ public class EmployeeService {
     public CustomResponse updateEmployee(EmployeeModel employee, String id) {
         try {
             EmployeeModel foundEmployee = EmployeeModel.employeeExists(id, employeeRepository);
-            if(!foundEmployee.getEmail().equals(employee.getEmail())){
+            if (!foundEmployee.getEmail().equals(employee.getEmail())) {
                 EmployeeModel.checkEmailChangeLegit(employee, employeeRepository);
             }
             employee.setId(id);
@@ -59,9 +59,9 @@ public class EmployeeService {
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         } catch (ResourceNotFound e) {
-            return CustomResponse.NOT_FOUND(e.getResource(),e.getId());
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         } catch (ResourceExists e) {
-            return CustomResponse.ALREADY_EXISTS(e.getResource(),e.getResourceName(),e.getCheckedProperty());
+            return CustomResponse.ALREADY_EXISTS(e.getResource(), e.getResourceName(), e.getCheckedProperty());
         }
     }
 
@@ -74,7 +74,7 @@ public class EmployeeService {
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         } catch (ResourceNotFound e) {
-            return CustomResponse.NOT_FOUND(e.getResource(),e.getId());
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
 
@@ -86,7 +86,7 @@ public class EmployeeService {
         } catch (Exception e) {
             return CustomResponse.INTERNAL_SERVER_ERROR(e.getMessage());
         } catch (ResourceNotFound e) {
-            return CustomResponse.NOT_FOUND(e.getResource(),e.getId());
+            return CustomResponse.NOT_FOUND(e.getResource(), e.getId());
         }
     }
 }
