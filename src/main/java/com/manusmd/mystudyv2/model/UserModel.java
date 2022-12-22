@@ -1,5 +1,6 @@
 package com.manusmd.mystudyv2.model;
 
+import com.manusmd.mystudyv2.payload.request.SignupRequest;
 import com.manusmd.mystudyv2.repository.EmployeeRepository;
 import com.manusmd.mystudyv2.repository.StudentRepository;
 import com.manusmd.mystudyv2.repository.TeacherRepository;
@@ -18,6 +19,7 @@ public class UserModel {
     private String firstName;
     private String lastName;
     private String email;
+    private String username;
     private String street;
     private String house;
     private String city;
@@ -37,23 +39,49 @@ public class UserModel {
         this.phone = phone;
     }
 
-    public static void checkEmailChangeLegit (TeacherModel teacher, TeacherRepository repository) throws ResourceExists {
+    public static void checkEmailChangeLegit(TeacherModel teacher, TeacherRepository repository) throws ResourceExists {
         Optional<TeacherModel> foundTeacherByEmail = repository.findByEmail(teacher.getEmail());
-        if(foundTeacherByEmail.isPresent()){
-            throw new ResourceExists(teacher, "Teacher","mail");
+        if (foundTeacherByEmail.isPresent()) {
+            throw new ResourceExists(teacher, "Teacher", "mail");
         }
     }
-    public static void checkEmailChangeLegit (EmployeeModel employee, EmployeeRepository repository) throws ResourceExists {
+
+    public static void checkEmailChangeLegit(EmployeeModel employee, EmployeeRepository repository) throws ResourceExists {
         Optional<EmployeeModel> foundEmployeeByEmail = repository.findByEmail(employee.getEmail());
-        if(foundEmployeeByEmail.isPresent()){
-            throw new ResourceExists(employee, "Employee","mail");
+        if (foundEmployeeByEmail.isPresent()) {
+            throw new ResourceExists(employee, "Employee", "mail");
         }
     }
-    public static void checkEmailChangeLegit (StudentModel student, StudentRepository repository) throws ResourceExists {
+
+    public static void checkEmailChangeLegit(StudentModel student, StudentRepository repository) throws ResourceExists {
         Optional<StudentModel> foundStudentByEmail = repository.findByEmail(student.getEmail());
-        if(foundStudentByEmail.isPresent()){
-            throw new ResourceExists(student, "Student","mail");
+        if (foundStudentByEmail.isPresent()) {
+            throw new ResourceExists(student, "Student", "mail");
         }
+    }
+
+    public static boolean changeUsernameAndSave(SignupRequest signupRequest, EmployeeRepository repository) {
+        Optional<EmployeeModel> foundEmployee = repository.findByEmail(signupRequest.getEmail());
+        if (foundEmployee.isEmpty()) return false;
+        foundEmployee.get().setUsername(signupRequest.getUsername());
+        repository.save(foundEmployee.get());
+        return true;
+    }
+
+    public static boolean changeUsernameAndSave(SignupRequest signupRequest, TeacherRepository repository) {
+        Optional<TeacherModel> foundTeacher = repository.findByEmail(signupRequest.getEmail());
+        if (foundTeacher.isEmpty()) return false;
+        foundTeacher.get().setUsername(signupRequest.getUsername());
+        repository.save(foundTeacher.get());
+        return true;
+    }
+
+    public static boolean changeUsernameAndSave(SignupRequest signupRequest, StudentRepository repository) {
+        Optional<StudentModel> foundStudent = repository.findByEmail(signupRequest.getEmail());
+        if (foundStudent.isEmpty()) return false;
+        foundStudent.get().setUsername(signupRequest.getUsername());
+        repository.save(foundStudent.get());
+        return true;
     }
 
 
