@@ -24,7 +24,12 @@ public class AuthenticationController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {
-       return authenticationService.signup(signUpRequest);
+        return authenticationService.signup(signUpRequest);
+    }
+
+    @GetMapping("/who")
+    public ResponseEntity<?> whoami() {
+        return authenticationService.whoami();
     }
 
 

@@ -9,5 +9,6 @@ public interface TeacherRepository extends MongoRepository<TeacherModel,String> 
     Optional<TeacherModel> findByEmail(String email);
 
 
+    Optional<TeacherModel> findByUsername(String username);
 }
 

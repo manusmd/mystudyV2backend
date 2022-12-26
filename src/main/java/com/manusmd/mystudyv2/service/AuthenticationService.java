@@ -1,9 +1,6 @@
 package com.manusmd.mystudyv2.service;
 
-import com.manusmd.mystudyv2.model.AuthUserModel;
-import com.manusmd.mystudyv2.model.ERole;
-import com.manusmd.mystudyv2.model.RoleModel;
-import com.manusmd.mystudyv2.model.UserModel;
+import com.manusmd.mystudyv2.model.*;
 import com.manusmd.mystudyv2.payload.request.LoginRequest;
 import com.manusmd.mystudyv2.payload.request.SignupRequest;
 import com.manusmd.mystudyv2.payload.response.JwtResponse;
@@ -17,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -118,5 +116,29 @@ public class AuthenticationService {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
+    }
+
+    public ResponseEntity<?> whoami() {
+        UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        switch (user.getAuthorities().toArray()[0].toString()) {
+            case "ROLE_ADMIN" -> {
+                return ResponseEntity.ok(user.getUsername());
+            }
+            case "ROLE_MODERATOR" -> {
+                EmployeeModel employee = employeeRepository.findByUsername(user.getUsername()).orElseThrow(() -> new RuntimeException("Error: Employee is not found."));
+                return ResponseEntity.ok(employee);
+            }
+            case "ROLE_TEACHER" -> {
+                TeacherModel teacher = teacherRepository.findByUsername(user.getUsername()).orElseThrow(() -> new RuntimeException("Error: Teacher is not found."));
+                return ResponseEntity.ok(teacher);
+            }
+            case "ROLE_STUDENT" -> {
+                StudentModel student = studentRepository.findByUsername(user.getUsername()).orElseThrow(() -> new RuntimeException("Error: Student is not found."));
+                return ResponseEntity.ok(student);
+            }
+            default -> {
+                return ResponseEntity.ok(new MessageResponse("Failed to get user!"));
+            }
+        }
     }
 }
