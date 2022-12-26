@@ -6,6 +6,7 @@ import com.manusmd.mystudyv2.payload.request.SignupRequest;
 import com.manusmd.mystudyv2.payload.response.JwtResponse;
 import com.manusmd.mystudyv2.payload.response.MessageResponse;
 import com.manusmd.mystudyv2.repository.*;
+import com.manusmd.mystudyv2.response.AdminResponse;
 import com.manusmd.mystudyv2.security.jwt.JwtUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -122,7 +123,12 @@ public class AuthenticationService {
         UserDetails user = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         switch (user.getAuthorities().toArray()[0].toString()) {
             case "ROLE_ADMIN" -> {
-                return ResponseEntity.ok(user.getUsername());
+                AuthUserModel authUserModel = authUserRepository.findByUsername(user.getUsername()).orElseThrow(() -> new RuntimeException("Error: User is not found."));
+                AdminResponse adminResponse = new AdminResponse();
+                adminResponse.setId(authUserModel.getId());
+                adminResponse.setUsername(authUserModel.getUsername());
+                adminResponse.setEmail(authUserModel.getEmail());
+                return ResponseEntity.ok(adminResponse);
             }
             case "ROLE_MODERATOR" -> {
                 EmployeeModel employee = employeeRepository.findByUsername(user.getUsername()).orElseThrow(() -> new RuntimeException("Error: Employee is not found."));
