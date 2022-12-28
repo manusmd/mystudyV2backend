@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -17,13 +18,14 @@ import java.util.Optional;
 public class StudentModel extends UserModel {
     private Double balance = 0.0;
 
-    public StudentModel(String firstName, String lastName, String email, String street, String house, String city, String postcode, String phone) {
-        super(firstName, lastName, email, street, house, city, postcode, phone);
+    public StudentModel(String firstName, String lastName, String email, String street, String house, String city,
+                        String postcode, String phone, Set<String> roles) {
+        super(firstName, lastName, email, street, house, city, postcode, phone, roles);
     }
 
     public StudentModel bookBalanceAndSave(Double value, StudentRepository studentRepository) {
         StudentModel updatedStudent = new StudentModel(this.getFirstName(), this.getLastName(), this.getEmail(),
-                this.getStreet(), this.getHouse(), this.getCity(), this.getPostcode(), this.getPhone());
+                this.getStreet(), this.getHouse(), this.getCity(), this.getPostcode(), this.getPhone(), this.getRoles());
         updatedStudent.setBalance(this.balance + value);
         updatedStudent.setId(this.getId());
         studentRepository.save(updatedStudent);

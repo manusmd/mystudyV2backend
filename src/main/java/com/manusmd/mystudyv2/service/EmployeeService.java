@@ -1,7 +1,10 @@
 package com.manusmd.mystudyv2.service;
 
 import com.manusmd.mystudyv2.model.EmployeeModel;
+import com.manusmd.mystudyv2.model.RoleModel;
+import com.manusmd.mystudyv2.model.UserModel;
 import com.manusmd.mystudyv2.repository.EmployeeRepository;
+import com.manusmd.mystudyv2.repository.RoleRepository;
 import com.manusmd.mystudyv2.response.CustomResponse;
 import com.manusmd.mystudyv2.throwable.ResourceExists;
 import com.manusmd.mystudyv2.throwable.ResourceNotFound;
@@ -9,15 +12,21 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class EmployeeService {
     EmployeeRepository employeeRepository;
+    RoleRepository roleRepository;
 
-    public CustomResponse createTeacher(EmployeeModel employee) {
+    public CustomResponse createEmployee(EmployeeModel employee) {
         try {
             EmployeeModel.canCreate(employee, employeeRepository);
+            Set<RoleModel> roles = UserModel.createRoleModels(employee.getRoles(), roleRepository);
+            Set<String> strRoles = roles.stream().map((role)-> role.getName().toString()).collect(Collectors.toSet());
+            employee.setRoles(strRoles);
             EmployeeModel createdEmployee = employeeRepository.save(employee);
             return CustomResponse.CREATED(createdEmployee, "Employee");
         } catch (Exception e) {

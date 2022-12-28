@@ -16,7 +16,7 @@ public class EmployeeController {
     @PostMapping("/Employees")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CustomResponse> createEmployee(@ModelAttribute EmployeeModel employee){
-        CustomResponse response = employeeService.createTeacher(employee);
+        CustomResponse response = employeeService.createEmployee(employee);
         return new ResponseEntity<>(response, response.getStatus());
     }
     @GetMapping("/Employees/{id}")
