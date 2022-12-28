@@ -128,6 +128,7 @@ public class AuthenticationService {
                 adminResponse.setId(authUserModel.getId());
                 adminResponse.setUsername(authUserModel.getUsername());
                 adminResponse.setEmail(authUserModel.getEmail());
+                adminResponse.setRoles(authUserModel.getRoles().stream().map(RoleModel::getName).collect(Collectors.toList()));
                 return ResponseEntity.ok(adminResponse);
             }
             case "ROLE_MODERATOR" -> {
