@@ -19,8 +19,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,58 +47,40 @@ public class AuthenticationService {
         }
 
 
+
         // Create new user's account
         AuthUserModel user = new AuthUserModel(signUpRequest.getUsername(), signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
 
-        Set<String> strRoles = signUpRequest.getRoles();
-        Set<RoleModel> roles = new HashSet<>();
+        Optional<EmployeeModel> employee = employeeRepository.findByEmail(signUpRequest.getEmail());
+        Optional<TeacherModel> teacher = teacherRepository.findByEmail(signUpRequest.getEmail());
+        Optional<StudentModel> student = studentRepository.findByEmail(signUpRequest.getEmail());
 
+        try{
 
-        if (strRoles == null) {
-            RoleModel userRole = roleRepository.findByName(ERole.ROLE_STUDENT)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
+        if (employee.isPresent()){
+            UserModel.changeUsernameAndSave(signUpRequest, employeeRepository);
+            UserModel.checkRoles(employee.get().getRoles());
+            Set<RoleModel> roles = UserModel.createRoleModels(employee.get().getRoles(), roleRepository);
+            user.setRoles(roles);
+        } else if (teacher.isPresent()){
+            UserModel.changeUsernameAndSave(signUpRequest, teacherRepository);
+            UserModel.checkRoles(teacher.get().getRoles());
+            Set<RoleModel> roles = UserModel.createRoleModels(teacher.get().getRoles(), roleRepository);
+            user.setRoles(roles);
+        } else if (student.isPresent()){
+            UserModel.changeUsernameAndSave(signUpRequest, studentRepository);
+            UserModel.checkRoles(student.get().getRoles());
+            Set<RoleModel> roles = UserModel.createRoleModels(student.get().getRoles(), roleRepository);
+            user.setRoles(roles);
         } else {
-            try {
-                strRoles.forEach(role -> {
-                    switch (role) {
-                        case "admin" -> {
-                            RoleModel adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(adminRole);
-                        }
-                        case "mod" -> {
-                            RoleModel modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(modRole);
-                            if (!UserModel.changeUsernameAndSave(signUpRequest, employeeRepository)) {
-                                throw new RuntimeException("Admin has to create employee account first!");
-                            }
-                        }
-                        case "teacher" -> {
-                            RoleModel teacherRole = roleRepository.findByName(ERole.ROLE_TEACHER)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(teacherRole);
-                            if (!UserModel.changeUsernameAndSave(signUpRequest, teacherRepository)) {
-                                throw new RuntimeException("Admin/Employee has to create teacher account first!");
-                            }
-                        }
-                        case "student" -> {
-                            RoleModel studentRole = roleRepository.findByName(ERole.ROLE_STUDENT)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(studentRole);
-                            if (!UserModel.changeUsernameAndSave(signUpRequest, studentRepository)) {
-                                throw new RuntimeException("Admin/Employee has to create student account first!");
-                            }
-                        }
-                        default -> throw new RuntimeException("Error: Role is not found.");
-                    }
-                });
-            } catch (RuntimeException e) {
-                return ResponseEntity.badRequest().body(new MessageResponse(e.getMessage()));
-            }
+            Set<RoleModel> roles = UserModel.createRoleModels(signUpRequest.getRoles(), roleRepository);
+            user.setRoles(roles);
         }
-        user.setRoles(roles);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: " + e.getMessage()));
+        }
+
+
         authUserRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
