@@ -73,8 +73,7 @@ public class AuthenticationService {
             Set<RoleModel> roles = UserModel.createRoleModels(student.get().getRoles(), roleRepository);
             user.setRoles(roles);
         } else {
-            Set<RoleModel> roles = UserModel.createRoleModels(signUpRequest.getRoles(), roleRepository);
-            user.setRoles(roles);
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Tried to register unknown user!"));
         }
         } catch (Exception e){
             return ResponseEntity.badRequest().body(new MessageResponse("Error: " + e.getMessage()));
